@@ -18,6 +18,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BiggerSource.h" />
+    <ClInclude Include="GlobalHeader.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="ResultsDataStructure.h" />
+    <ClInclude Include="SchemeDataStructure.h" />
+    <ClInclude Include="Source.h" />
+    <ClInclude Include="Test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BiggerSource.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ResultsDataStructure.cpp" />
+    <ClCompile Include="SchemeDataStructure.cpp" />
+    <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Test.cu" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7594E70-909A-4388-8A4B-9FD95CAF1047}</ProjectGuid>
     <RootNamespace>CuSorting</RootNamespace>
@@ -150,9 +169,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
