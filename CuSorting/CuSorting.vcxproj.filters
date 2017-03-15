@@ -30,6 +30,16 @@
     <ClInclude Include="Test.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="cuLib.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="cuSource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="cuSDStruct.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="cuRDStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp">
@@ -47,9 +57,18 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="cuSource.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalHeader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Test.cu">
+      <Filter>Source</Filter>
+    </CudaCompile>
+    <CudaCompile Include="cuLib.cu">
       <Filter>Source</Filter>
     </CudaCompile>
   </ItemGroup>

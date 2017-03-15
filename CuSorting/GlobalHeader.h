@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef H_GLOBALHEADER_H
+#define H_GLOBALHEADER_H
+
 #ifdef _MSC_VER
 
 #define printf_stream(stream,fixed_string,...)\
@@ -15,6 +18,12 @@
 
 #define fopen_stream(stream,fixed_string,permissions)\
 		*stream = fopen(fixed_string,permissions)
+
+#endif
+
+extern const bool skip_input;
+extern const bool skip_sorting;
+extern const bool skip_output;
 
 #endif
 

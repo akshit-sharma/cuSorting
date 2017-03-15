@@ -12,12 +12,6 @@ private:
 
 	std::vector <std::string> headers;
 
-	std::string * institution_name;
-	int * paper_id;
-	std::string * subject_name;
-
-    SchemeDataStructure * schemeDataStructure;
-
 	static int init_num;
 
 	std::string * sorted_col_string;
@@ -29,8 +23,6 @@ private:
 	};
 
 	enum type sorted_col_type;
-
-	size_t rows;
 
 	bool readFileToBuffer(std::string filePath, std::vector<unsigned char>& buffer);
 	void swap(const size_t index_1, const size_t index_2);
@@ -45,11 +37,24 @@ private:
 	void bubblesort(std::string* toSort, size_t low, size_t high);
 	void bubblesort(int* toSort, size_t low, size_t high);
 
+protected:
+	int * paper_id;
+	std::string * subject_name;
+	std::string * institution_name;
+
+	SchemeDataStructure * schemeDataStructure;
+
+	int column;
+
+	size_t length_institution_name, length_subject_name;
+
+	size_t rows;
+
 public:
-	void MemAllo();
-	void readFile(const char * file_name);
-	void sort(int column);
+	virtual void MemAllo();
+	void readFile(const char * file_name, int column);
+	virtual void sort(int column);
 	void print_table(const char * file_name);
-	void MemFree();
+	virtual void MemFree();
 
 };

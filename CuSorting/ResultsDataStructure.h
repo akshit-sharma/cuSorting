@@ -44,7 +44,7 @@ class ResultsDataStructure {
     ResultDS(;);
 
 public:
-    static const size_t MAX_SIZE = 3024348;
+    static const size_t MAX_SIZE = 3264123;
 
     void modifyRDS(
             int scheme_prog_code,

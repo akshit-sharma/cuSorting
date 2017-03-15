@@ -16,8 +16,10 @@ BiggerSource bigsource;
 
 double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
+double memory_alloc_time;
 double sort_duration;
 double avg_write_times_small, avg_write_times_big;
+double memory_dealloc_time;
 
 const char * file_name_small;
 const char * file_name_big;
@@ -31,25 +33,37 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 
 	start = std::clock();
 	source_obj->MemAllo();
-	if(value % 2 == 0)
-		source_obj->readFile(file_name_small);
-	else
-		source_obj->readFile(file_name_big);
+	memory_alloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	
+	start = std::clock();
+	if(!skip_input){
+		if(value % 2 == 0)
+			source_obj->readFile(file_name_small, value/2);
+		else
+			source_obj->readFile(file_name_big, value/2);
+	}
 	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	
 	if (value % 2 == 0)
 		avg_read_times_small += duration;
 	else
 		avg_read_times_big += duration;
 
 	start = std::clock();
+	if(!skip_sorting)
 	source_obj->sort(value/2);
 	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	sort_duration = duration;
 
 	start = std::clock();
+	if(!skip_output)
 	source_obj->print_table(output_file_name);
-	source_obj->MemFree();
 	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	
+	start = std::clock();
+	source_obj->MemFree();
+	memory_dealloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	
 	if (value % 2 == 0)
 		avg_write_times_small += duration;
 	else
@@ -66,7 +80,7 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 
 int main(int argc, char ** argv)
 {
-
+	/*
 	const int arraySize = 5;
 	const int a[arraySize] = { 1, 2, 3, 4, 5 };
 	const int b[arraySize] = { 10, 20, 30, 40, 50 };
@@ -91,8 +105,8 @@ int main(int argc, char ** argv)
 	}
 
 	return 0;
+	*/
 
-	/*
 	if (argc != 4)
 	{
 		perror("Invalid parameter given");
@@ -116,8 +130,8 @@ int main(int argc, char ** argv)
 	big_times = 0;
 
 
-	printf_stream(stdout, " %10s | %10s | %10s | %10s | %10s \n",
-		"technique", "colSmData", "timeTaken", "colBiData", "timeTaken"
+	printf_stream(stdout, " %10s | %10s | %10s | %10s | %10s | %10s | %10s \n",
+		"technique", "memAlloc", "colSmData", "timeTaken", "memDealloc", "colBiData", "timeTaken"
 			);
 
 
@@ -139,64 +153,64 @@ int main(int argc, char ** argv)
 	runSort(source_obj, 2, sort_small);
 	runSort(big_source_obj, 3, sort_big);
 	
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", "paper_id", *sort_small, "paper_id", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"quicksort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
 	);
 
-  runSort(source_obj, 4, sort_small);
+	runSort(source_obj, 4, sort_small);
 	runSort(big_source_obj, 5, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", "subjName", *sort_small, "name", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"quicksort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
 	);
 
 	runSort(source_obj, 6, sort_small);
 	runSort(big_source_obj, 7, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", "InstiName", *sort_small, "rollnum.", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"quicksort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
 	);
 
 	runSort(source_obj, 8, sort_small);
 	runSort(big_source_obj, 9, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", "paper_id", *sort_small, "paper_id", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"shellsort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
 	);
 
 	runSort(source_obj, 10, sort_small);
 	runSort(big_source_obj, 11, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", "subjName", *sort_small, "name", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"shellsort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
 	);
 
 	runSort(source_obj, 12, sort_small);
 	runSort(big_source_obj, 13, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", "InstiName", *sort_small, "rollnum.", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"shellsort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
 	);
 	
 	runSort(source_obj, 14, sort_small);
 	runSort(big_source_obj, 15, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", "paper_id", *sort_small, "paper_id", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"bubblesort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
 	);
 
 	runSort(source_obj, 16, sort_small);
 	runSort(big_source_obj, 17, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", "subjName", *sort_small, "name", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"bubblesort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
 	);
 
 	runSort(source_obj, 18, sort_small);
 	runSort(big_source_obj, 19, sort_big);
 
-	printf_stream(stdout, " %10s | %10s | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", "InstiName", *sort_small, "rollnum.", *sort_big
+	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
+		"bubblesort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
 	);
 
 	
@@ -211,7 +225,7 @@ int main(int argc, char ** argv)
 	printf_stream(stdout, "\n");
 
 	return 0;
-	 */
+	 
 
 }
 

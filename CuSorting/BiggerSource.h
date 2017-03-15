@@ -12,17 +12,11 @@ private:
 
     std::vector<std::string> headers;
 
-    long long * rollnumber;
-    std::string * name;
-	int * paper_id;
-
-    ResultsDataStructure * resultsDataStructure;
-
-	static int init_num;
-
-	std::string * sorted_col_string;
 	int * sorted_col_int;
 	long long * sorted_col_long;
+	std::string * sorted_col_string;
+
+	static int init_num;
 
 	enum type
 	{
@@ -30,7 +24,6 @@ private:
 	};
 
 	enum type sorted_col_type;
-    size_t rows;
 
 	bool readFileToBuffer(std::string filePath, std::vector<unsigned char>& buffer);
 	void swap(size_t index_1, size_t index_2);
@@ -49,10 +42,24 @@ private:
 	void bubblesort(long long* toSort, size_t low, size_t high);
 	void bubblesort(int* toSort, size_t low, size_t high);
 
+protected:
+	int * paper_id;
+	long long * rollnumber;
+	std::string * name;
+
+	ResultsDataStructure * resultsDataStructure;
+
+	int column;
+
+	size_t length_name;
+
+	size_t rows;
+
+
 public:
 	void MemAllo();
-	void readFile(const char * file_name);
-	void sort(int column);
+	void readFile(const char * file_name, int column);
+	virtual void sort(int column);
 	void print_table(const char * file_name);
 	void MemFree();
 

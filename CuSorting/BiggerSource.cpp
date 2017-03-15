@@ -9,7 +9,7 @@
 
 int BiggerSource::init_num = 0;
 
-void BiggerSource::readFile(const char* file_name)
+void BiggerSource::readFile(const char* file_name, int column)
 {
 
     std::vector<unsigned char> buffer;
@@ -18,6 +18,10 @@ void BiggerSource::readFile(const char* file_name)
     int index;
     size_t line_number;
     int category;
+
+	bool overpassed_name = NULL;
+
+	this->column = column;
 
     std::ifstream file(file_name,
         std::ios::binary | std::ios::in);
@@ -144,9 +148,14 @@ void BiggerSource::readFile(const char* file_name)
 
             if(line_number!=0){
 
-                this->rollnumber[line_number-1] = rollnumber;
-                this->name[line_number-1] = std::string(name);
-                this->paper_id[line_number-1] = paper_id;
+				if(column%3==0)
+					this->rollnumber[line_number-1] = rollnumber;
+
+				if (column%3 == 1)
+					this->paper_id[line_number - 1] = paper_id;
+
+				if(column%3==2)
+					this->name[line_number-1] = std::string(name);
 
                 resultsDataStructure[line_number-1].modifyRDS(
                       scheme_prog_code, prepared_date, declared_date, prog_name, prog_sem_year,
@@ -154,11 +163,38 @@ void BiggerSource::readFile(const char* file_name)
                       name, sid, result_scheme_id, paper_id, credits, minor, major, total
                 );
 
+				{
+					if (overpassed_name != NULL && overpassed_name == false)
+					{
+						if (length_name < (std::numeric_limits<size_t>::max() >> 5))
+						{
+							printf_stream(stderr, "Not good");
+							overpassed_name = true;
+						}
+					}
+
+					length_name += std::string(name).length() + 1;
+
+					if (overpassed_name == NULL || overpassed_name == true)
+					{
+						if (length_name > (std::numeric_limits<size_t>::max() >> 5))
+						{
+							overpassed_name = false;
+						}
+					}
+				}
+
             }
 
             line_number++;
 
     }
+
+	if (overpassed_name != NULL)
+		printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_name, overpassed_name);
+	else
+		printf_stream(stdout, "Value of inst. length %zu \n", length_name);
+
 
     file.close();
 
@@ -261,8 +297,17 @@ void BiggerSource::MemAllo()
 	paper_id = new int[rows];
     rollnumber = new long long[rows];
     name = new std::string[rows];
+	try
+	{
+		resultsDataStructure = new ResultsDataStructure[rows];
+	}
+	catch (std::bad_alloc err)
+	{
+		printf_stream(stderr, "Memory Alloc error \n %s",err.what());
+		throw;
+	}
 
-    resultsDataStructure = new ResultsDataStructure[rows];
+	length_name = 0;
 
 	init_num++;
 
@@ -648,9 +693,19 @@ void BiggerSource::swap(size_t index_1, size_t index_2)
 	std::string t_string;
     ResultsDataStructure t_resultsDataStructure;
 
-    SWAP(temp_int, index_1, index_2, paper_id);
-    SWAP(temp_long, index_1, index_2, rollnumber);
-    SWAP(t_string, index_1, index_2, name);
+	switch (column%3)
+	{
+	case 0:
+		SWAP(temp_long, index_1, index_2, rollnumber);
+		break;
+	case 1:
+		SWAP(temp_int, index_1, index_2, paper_id);
+		break;
+	case 2:
+		SWAP(t_string, index_1, index_2, name);
+		break;
+	}
+
     SWAP(t_resultsDataStructure, index_1, index_2, resultsDataStructure);
 
 }

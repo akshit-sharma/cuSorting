@@ -9,7 +9,7 @@
 
 int Source::init_num = 0;
 
-void Source::readFile(const char* file_name)
+void Source::readFile(const char* file_name, int column)
 {
 	std::vector<unsigned char> buffer;
 	char temp_var[128];
@@ -24,6 +24,10 @@ void Source::readFile(const char* file_name)
     std::string subject_name;	int credits; std::string type; std::string exam; std::string mode;
     std::string kind;	std::string minor; std::string major; std::string max_marks; std::string pass_marks;
 
+	bool overpassed_inst = NULL;
+	bool overpassed_subj = NULL;
+
+	this->column = column;
 
     for(index=0;index<128;index++)
         temp_var[index] = '\0';
@@ -160,9 +164,53 @@ void Source::readFile(const char* file_name)
 		}
 
         if(line_number != 0) {
-            this->institution_name[line_number - 1] = std::string(institution_name);
-            this->paper_id[line_number - 1] = paper_id;
-            this->subject_name[line_number - 1] = std::string(subject_name);
+			
+        	if(column%3==0)
+				this->institution_name[line_number - 1] = std::string(institution_name);
+
+			if(column%3==1)
+				this->paper_id[line_number - 1] = paper_id;
+            
+			if(column%3==2)
+        		this->subject_name[line_number - 1] = std::string(subject_name);
+
+
+			{
+				if (overpassed_inst != NULL && overpassed_inst == false)
+				{
+					if (length_institution_name < (std::numeric_limits<size_t>::max() >> 5))
+					{
+						printf_stream(stderr, "Not good");
+						overpassed_inst = true;
+					}
+				}
+				if (overpassed_subj != NULL && overpassed_subj == false)
+				{
+					if (length_institution_name < (std::numeric_limits<size_t>::max() >> 5))
+					{
+						printf_stream(stderr, "Not good");
+						overpassed_subj = true;
+					}
+				}
+
+				length_institution_name += std::string(institution_name).length() + 1;
+				length_subject_name += std::string(subject_name).length() + 1;
+
+				if (overpassed_inst == NULL || overpassed_inst == true)
+				{
+					if (length_institution_name > (std::numeric_limits<size_t>::max() >> 5))
+					{
+						overpassed_inst = false;
+					}
+				}
+				if (overpassed_subj == NULL || overpassed_subj == true)
+				{
+					if (length_institution_name > (std::numeric_limits<size_t>::max() >> 5))
+					{
+						overpassed_inst = false;
+					}
+				}
+			}
 
             schemeDataStructure[line_number-1].modifySDS(
                     scheme_prog_code, prog_name, scheme_id, prog_sem_year,
@@ -176,7 +224,17 @@ void Source::readFile(const char* file_name)
 		line_number++;
 	}
 
+	if(overpassed_inst != NULL)
+	printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_institution_name, overpassed_inst);
+	else
+		printf_stream(stdout, "Value of inst. length %zu \n", length_institution_name);
+	if(overpassed_subj != NULL)
+	printf_stream(stdout, "Value of subj. length %zu & bool = %d \n", length_subject_name, overpassed_subj);
+	else
+		printf_stream(stdout, "Value of subj. length %zu \n", length_subject_name);
+
 	file.close();
+
 }
 
 bool Source::readFileToBuffer(std::string filePath,
@@ -274,6 +332,9 @@ void Source::MemAllo()
 	subject_name = new std::string[rows];
 
     schemeDataStructure = new SchemeDataStructure[rows];
+
+	length_institution_name = 0;
+	length_subject_name = 0;
 
 	init_num++;
 
@@ -558,9 +619,19 @@ void Source::swap(const size_t index_1, const size_t index_2)
     std::string t_string;
     SchemeDataStructure t_schemeDataStructure;
 
-    SWAP(t_int, index_1, index_2, paper_id);
-    SWAP(t_string, index_1, index_2, subject_name);
-    SWAP(t_string, index_1, index_2, institution_name);
+	switch (column%3)
+	{
+	case 0:
+		SWAP(t_string, index_1, index_2, institution_name);
+		break;
+	case 1:
+		SWAP(t_int, index_1, index_2, paper_id);
+		break;
+	case 2:
+		SWAP(t_string, index_1, index_2, subject_name);
+		break;
+	}
+
     SWAP(t_schemeDataStructure, index_1, index_2, schemeDataStructure);
 
 }
