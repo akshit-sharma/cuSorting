@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BiggerSource.h" />
+    <ClInclude Include="cuBiggerSource.h" />
     <ClInclude Include="cuLib.h" />
     <ClInclude Include="cuRDStruct.h" />
     <ClInclude Include="cuSource.h" />

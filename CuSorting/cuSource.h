@@ -4,16 +4,8 @@
 
 class CuSource : protected Source
 {
-
-	int * d_paper_id;
-	char * d_institution_name;
-	char * d_subject_name;
-
-	char * h_institution_name;
-	char * h_subject_name;
-
-	SchemeDataStructure * d_schemeDataStructure;
-
+	
+	struct PaperIdWrapper * d_paperIdWrapper;
 	struct PaperIdWrapper * paperIdWrapper;
 
 	

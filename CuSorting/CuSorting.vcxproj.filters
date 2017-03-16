@@ -40,6 +40,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="cuRDStruct.h" />
+    <ClInclude Include="cuBiggerSource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp">

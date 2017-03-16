@@ -2,6 +2,21 @@
 #include "cuSource.h"
 #include <cuda_runtime.h>
 
+void CuSource::sort(int column) {
+	switch (column % 3)
+	{
+	case 0:
+		break;
+	case 1:
+		// call sorting kernel with
+		// d_paperIdWrapper
+		break;
+	case 2:
+		break;
+	}
+
+}
+
 void CuSource::MemAllo()
 {
 	Source::MemAllo();
@@ -23,8 +38,11 @@ void CuSource::MemAllo()
 			paperIdWrapper[i].paper_id = paper_id[i];
 			paperIdWrapper[i].classPtr = &schemeDataStructure[i];
 		}
-		//cudaMalloc((void **)d_paper_id, rows * sizeof(int));
-		// TODO: cudaMemcpy
+		cudaMalloc((void **)d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper));
+		cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
+			rows * sizeof(struct PaperIdWrapper),
+			cudaMemcpyHostToDevice
+			);
 		break;
 	case 2:
 		// NOT READY
@@ -49,7 +67,8 @@ void CuSource::MemFree()
 	//	delete[](h_institution_name);
 		break;
 	case 1:
-		cudaFree(d_paper_id);
+		cudaFree(d_paperIdWrapper);
+		free(paperIdWrapper);
 		break;
 	case 2:
 	//	cudaFree(d_subject_name);
