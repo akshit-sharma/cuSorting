@@ -173,6 +173,10 @@ void BiggerSource::readFile(const char* file_name, int column)
 						}
 					}
 
+					if (name.length() > maxLength_name) {
+						maxLength_name = name.length();
+					}
+
 					length_name += std::string(name).length() + 1;
 
 					if (overpassed_name == NULL || overpassed_name == true)
@@ -190,10 +194,15 @@ void BiggerSource::readFile(const char* file_name, int column)
 
     }
 
-	if (overpassed_name != NULL)
-		printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_name, overpassed_name);
-	else
-		printf_stream(stdout, "Value of inst. length %zu \n", length_name);
+
+	// Value is 40
+	//printf_stream(stdout, "Max length of name is %zu \n", maxLength_name);
+
+	// Value is 45340947
+	//if (overpassed_name != NULL)
+	//	printf_stream(stdout, "Value of name length %zu & bool = %d \n", length_name, overpassed_name);
+	//else
+	//	printf_stream(stdout, "Value of name length %zu \n", length_name);
 
 
     file.close();
@@ -308,6 +317,7 @@ void BiggerSource::MemAllo()
 	}
 
 	length_name = 0;
+	maxLength_name = 0;
 
 	init_num++;
 

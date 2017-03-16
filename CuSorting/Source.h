@@ -47,6 +47,7 @@ protected:
 	int column;
 
 	size_t length_institution_name, length_subject_name;
+	size_t maxLength_inti, maxLength_subj;
 
 	size_t rows;
 

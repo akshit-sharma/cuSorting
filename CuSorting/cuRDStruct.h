@@ -8,7 +8,7 @@ struct PaperIdWrapper {
 };
 
 struct RollNumberWrapper {
-	int rollnumber;
+	long long rollnumber;
 	ResultsDataStructure * classPtr;
 };
 

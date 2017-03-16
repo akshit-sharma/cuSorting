@@ -21,6 +21,10 @@
 
 #endif
 
+extern const bool skip_quick_cpu;
+extern const bool skip_shell_cpu;
+extern const bool skip_bubble_cpu;
+
 extern const bool skip_input;
 extern const bool skip_sorting;
 extern const bool skip_output;

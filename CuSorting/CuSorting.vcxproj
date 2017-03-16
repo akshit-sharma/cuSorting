@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="BiggerSource.h" />
     <ClInclude Include="cuBiggerSource.h" />
-    <ClInclude Include="cuLib.h" />
     <ClInclude Include="cuRDStruct.h" />
     <ClInclude Include="cuSource.h" />
     <ClInclude Include="cuSDStruct.h" />
@@ -30,20 +29,16 @@
     <ClInclude Include="ResultsDataStructure.h" />
     <ClInclude Include="SchemeDataStructure.h" />
     <ClInclude Include="Source.h" />
-    <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp" />
+    <ClCompile Include="cuBiggerSource.cpp" />
     <ClCompile Include="cuSource.cpp" />
     <ClCompile Include="GlobalHeader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ResultsDataStructure.cpp" />
     <ClCompile Include="SchemeDataStructure.cpp" />
     <ClCompile Include="Source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="cuLib.cu" />
-    <CudaCompile Include="Test.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7594E70-909A-4388-8A4B-9FD95CAF1047}</ProjectGuid>

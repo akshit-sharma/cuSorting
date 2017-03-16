@@ -9,8 +9,6 @@
 #include "BiggerSource.h"
 #include "Source.h"
 
-#include "Test.h"
-
 Source source;
 BiggerSource bigsource;
 
@@ -80,43 +78,17 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 
 int main(int argc, char ** argv)
 {
-	/*
-	const int arraySize = 5;
-	const int a[arraySize] = { 1, 2, 3, 4, 5 };
-	const int b[arraySize] = { 10, 20, 30, 40, 50 };
-	int c[arraySize] = { 0 };
-
-	// Add vectors in parallel.
-	cudaError_t cudaStatus = addWithCuda(c, a, b, arraySize);
-	if (cudaStatus != cudaSuccess) {
-		fprintf(stderr, "addWithCuda failed!");
-		return 1;
-	}
-
-	printf("{1,2,3,4,5} + {10,20,30,40,50} = {%d,%d,%d,%d,%d}\n",
-		c[0], c[1], c[2], c[3], c[4]);
-
-	// cudaDeviceReset must be called before exiting in order for profiling and
-	// tracing tools such as Nsight and Visual Profiler to show complete traces.
-	cudaStatus = cudaDeviceReset();
-	if (cudaStatus != cudaSuccess) {
-		fprintf(stderr, "cudaDeviceReset failed!");
-		return 1;
-	}
-
-	return 0;
-	*/
 
 	if (argc != 4)
 	{
 		perror("Invalid parameter given");
-		perror("Found parameter : "+argc);
+		perror("Found parameter : " + argc);
 		perror("argv[1], argv[2] & argv[3] not supplied");
 		perror("argv[1] & argv[2] is the path of input file");
 		perror("argv[3] is the path of output file");
 		exit(1);
 	}
-	
+
 	file_name_small = argv[1];
 	file_name_big = argv[2];
 	output_file_name = argv[3];
@@ -130,9 +102,9 @@ int main(int argc, char ** argv)
 	big_times = 0;
 
 
-	printf_stream(stdout, " %10s | %10s | %10s | %10s | %10s | %10s | %10s \n",
-		"technique", "memAlloc", "colSmData", "timeTaken", "memDealloc", "colBiData", "timeTaken"
-			);
+	printf_stream(stdout, " %10s | %10s | %10s | %10s | %10s \n",
+		"technique", "memAlloc", "colData", "timeTaken", "memDealloc" 
+	);
 
 
 
@@ -149,70 +121,24 @@ int main(int argc, char ** argv)
 
 	sort_small = &f1;
 	sort_big = &f2;
-	
-	runSort(source_obj, 2, sort_small);
-	runSort(big_source_obj, 3, sort_big);
-	
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
-	);
 
-	runSort(source_obj, 4, sort_small);
-	runSort(big_source_obj, 5, sort_big);
+	if(!skip_quick_cpu){
+		call_runsort("quicksort", 2, "paper_id", 3, "paper_id");
+		call_runsort("quicksort", 4, "subjName", 5, "name");
+		call_runsort("quicksort", 6, "InstiName", 7, "rollnum.");
+	}
 
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
-	);
+	if(!skip_shell_cpu){
+		call_runsort("shellsort", 8, "paper_id", 9, "paper_id");
+		call_runsort("shellsort", 10, "subjName", 11, "name");
+		call_runsort("shellsort", 12, "InstiName", 13, "rollnum.");
+	}
 
-	runSort(source_obj, 6, sort_small);
-	runSort(big_source_obj, 7, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"quicksort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
-	);
-
-	runSort(source_obj, 8, sort_small);
-	runSort(big_source_obj, 9, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
-	);
-
-	runSort(source_obj, 10, sort_small);
-	runSort(big_source_obj, 11, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
-	);
-
-	runSort(source_obj, 12, sort_small);
-	runSort(big_source_obj, 13, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"shellsort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
-	);
-	
-	runSort(source_obj, 14, sort_small);
-	runSort(big_source_obj, 15, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", memory_alloc_time, "paper_id", *sort_small, memory_dealloc_time, "paper_id", *sort_big
-	);
-
-	runSort(source_obj, 16, sort_small);
-	runSort(big_source_obj, 17, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", memory_alloc_time, "subjName", *sort_small, memory_dealloc_time, "name", *sort_big
-	);
-
-	runSort(source_obj, 18, sort_small);
-	runSort(big_source_obj, 19, sort_big);
-
-	printf_stream(stdout, " %10s | %10.5lf | %10s | %10.5lf | %10.5lf | %10s | %10.5lf \n",
-		"bubblesort", memory_alloc_time, "InstiName", *sort_small, memory_dealloc_time, "rollnum.", *sort_big
-	);
-
+	if (!skip_bubble_cpu) {
+		call_runsort("bubblesort", 14, "paper_id", 15, "paper_id");
+		call_runsort("bubblesort", 16, "subjName", 17, "name");
+		call_runsort("bubblesort", 18, "InstiName", 19, "rollnum.");
+	}
 	
 	printf_stream(stdout, "\n");
 

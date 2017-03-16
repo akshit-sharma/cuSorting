@@ -52,6 +52,7 @@ protected:
 	int column;
 
 	size_t length_name;
+	size_t maxLength_name;
 
 	size_t rows;
 
