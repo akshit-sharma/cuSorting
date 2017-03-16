@@ -17,9 +17,9 @@ void CuSource::sort(int column) {
 
 }
 
-void CuSource::MemAllo()
+void CuSource::MemAllo(const char* file_name)
 {
-	Source::MemAllo();
+	Source::MemAllo(file_name);
 
 	//cudaMalloc((void **) d_schemeDataStructure, rows * sizeof(SchemeDataStructure));
 

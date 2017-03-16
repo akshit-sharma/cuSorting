@@ -20,9 +20,9 @@ void CuBiggerSource::sort(int column) {
 	}
 }
 
-void CuBiggerSource::MemAllo() 
+void CuBiggerSource::MemAllo(const char* file_name)
 {
-	CuBiggerSource::MemAllo();
+	CuBiggerSource::MemAllo(file_name);
 
 	switch (column % 3)
 	{

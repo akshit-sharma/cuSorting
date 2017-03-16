@@ -30,7 +30,10 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	double duration;
 
 	start = std::clock();
-	source_obj->MemAllo();
+	if (value % 2 == 0)
+		source_obj->MemAllo(file_name_small);
+	else
+		source_obj->MemAllo(file_name_big);
 	memory_alloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	
 	start = std::clock();

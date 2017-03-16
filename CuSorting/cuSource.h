@@ -10,7 +10,7 @@ class CuSource : protected Source
 
 	
 public:
-	virtual void MemAllo();
+	virtual void MemAllo(const char* file_name);
 	virtual void sort(int column);
 	virtual void MemFree();
 

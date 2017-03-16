@@ -25,6 +25,7 @@ private:
 
 	enum type sorted_col_type;
 
+	size_t getFileLines(const char* file_name);
 	bool readFileToBuffer(std::string filePath, std::vector<unsigned char>& buffer);
 	void swap(size_t index_1, size_t index_2);
 	bool compare_isLess(std::string str1, std::string str2);
@@ -58,11 +59,11 @@ protected:
 
 
 public:
-	void MemAllo();
+	virtual void MemAllo(const char* file_name);
 	void readFile(const char * file_name, int column);
 	virtual void sort(int column);
 	void print_table(const char * file_name);
-	void MemFree();
+	virtual void MemFree();
 
 
 };

@@ -9,6 +9,30 @@
 
 int BiggerSource::init_num = 0;
 
+size_t BiggerSource::getFileLines(const char* file_name)
+{
+	size_t lines = -1;
+	char line[513];
+
+	std::ifstream file(file_name,
+		std::ios::binary | std::ios::in);
+
+	if (file.fail())
+	{
+		perror("Error in opening line");
+		perror(file_name);
+		exit(2);
+	}
+
+
+	while (file.getline(line, 512, '\n')) {
+		lines++;
+	}
+
+	return lines;
+
+}
+
 void BiggerSource::readFile(const char* file_name, int column)
 {
 
@@ -296,10 +320,10 @@ void BiggerSource::print_table(const char * file_name)
 
 }
 
-void BiggerSource::MemAllo()
+void BiggerSource::MemAllo(const char* file_name)
 {
     size_t colmns = 18;
-    rows = ResultsDataStructure::MAX_SIZE;
+    rows = getFileLines(file_name);
 
     headers.reserve(colmns);
 
