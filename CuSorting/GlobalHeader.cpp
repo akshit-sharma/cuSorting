@@ -6,5 +6,5 @@ const bool skip_shell_cpu = false;
 const bool skip_bubble_cpu = true;
 
 const bool skip_input = false;
-const bool skip_sorting = true;
-const bool skip_output = true;
+const bool skip_sorting = false;
+const bool skip_output = false;
