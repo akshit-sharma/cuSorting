@@ -4,18 +4,16 @@ project(CuSorting)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 
-SET(SOURCES
-        Main.cpp
-        Source.cpp
-        BiggerSource.cpp
-        SchemeDataStructure.cpp
-        GlobalHeader.cpp
-        BiggerSource.h
-        Main.h
-        Source.h
-        SchemeDataStructure.h
-        GlobalHeader.h
-        ResultsDataStructure.cpp ResultsDataStructure.h)
+file(GLOB CPP_SRC
+        "*.cpp"
+        )
+        
+        
+file(GLOB CPP_HEADER
+        "*.h"
+        )
+        
+        
 
-add_executable(CuSorting ${SOURCES})
+add_executable(CuSorting ${CPP_HEADER} ${CPP_SRC})
 
