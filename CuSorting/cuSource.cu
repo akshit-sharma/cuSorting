@@ -2,6 +2,8 @@
 #include "cuSource.h"
 #include <cuda_runtime.h>
 
+#include "GPU_Sorting_Functions.cuh"
+
 void CuSource::sort(int column) {
 	switch (column % 3)
 	{
@@ -10,6 +12,15 @@ void CuSource::sort(int column) {
 	case 1:
 		// call sorting kernel with
 		// d_paperIdWrapper
+		switch (column / 3)
+		{
+		case 2:
+			odd_even_sort_scheme_paperid<<<NUM_BLOCK,WID_BLOCK>>>(d_paperIdWrapper);
+			cudaDeviceSynchronize();
+		default:
+			break;
+		}
+
 		break;
 	case 2:
 		break;
@@ -27,28 +38,28 @@ void CuSource::MemAllo(const char* file_name)
 	{
 	case 0:
 		// NOT READY
-	//	cudaMalloc((void **)d_institution_name, rows * sizeof(char));
+		//	cudaMalloc((void **)d_institution_name, rows * sizeof(char));
 		// TODO: fig. out a way for string to gpu
-	//	h_institution_name = new char[length_institution_name + 1];
+		//	h_institution_name = new char[length_institution_name + 1];
 		// TODO: cudaMemcpy
 		break;
 	case 1:
-		paperIdWrapper = (struct PaperIdWrapper *) malloc(rows*sizeof(struct PaperIdWrapper));
+		paperIdWrapper = (struct PaperIdWrapper_Scheme *) malloc(rows * sizeof(struct PaperIdWrapper_Scheme));
 		for (size_t i = 0; i < rows; i++) {
 			paperIdWrapper[i].paper_id = paper_id[i];
 			paperIdWrapper[i].classPtr = &schemeDataStructure[i];
 		}
-		cudaMalloc((void **)d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper));
+		cudaMalloc((void **)d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper_Scheme));
 		cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
-			rows * sizeof(struct PaperIdWrapper),
+			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyHostToDevice
-			);
+		);
 		break;
 	case 2:
 		// NOT READY
-	//	cudaMalloc((void **)d_subject_name, rows * sizeof(char));
+		//	cudaMalloc((void **)d_subject_name, rows * sizeof(char));
 		// TODO: fig. out a way for string to gpu
-	//	h_subject_name = new char[length_subject_name + 1];
+		//	h_subject_name = new char[length_subject_name + 1];
 		// TODO: cudaMemcpy
 		break;
 	}
@@ -63,16 +74,16 @@ void CuSource::MemFree()
 	switch (column % 3)
 	{
 	case 0:
-	//	cudaFree(d_institution_name);
-	//	delete[](h_institution_name);
+		//	cudaFree(d_institution_name);
+		//	delete[](h_institution_name);
 		break;
 	case 1:
 		cudaFree(d_paperIdWrapper);
 		free(paperIdWrapper);
 		break;
 	case 2:
-	//	cudaFree(d_subject_name);
-	//	delete[](h_subject_name);
+		//	cudaFree(d_subject_name);
+		//	delete[](h_subject_name);
 		break;
 	}
 

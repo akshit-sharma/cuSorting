@@ -2,17 +2,17 @@
 
 #include "ResultsDataStructure.h"
 
-struct PaperIdWrapper {
+struct PaperIdWrapper_Results {
 	int paper_id;
 	ResultsDataStructure * classPtr;
 };
 
-struct RollNumberWrapper {
+struct RollNumberWrapper_Results {
 	long long rollnumber;
 	ResultsDataStructure * classPtr;
 };
 
-struct NameWrapper {
+struct NameWrapper_Results {
 	char * name;
 	ResultsDataStructure * classPtr;
 };

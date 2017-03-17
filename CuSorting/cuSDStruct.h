@@ -2,19 +2,19 @@
 
 #include "SchemeDataStructure.h"
 
-struct InstitutionNameWrapper
+struct InstitutionNameWrapper_Scheme
 {
 	char * institution_name;
 	SchemeDataStructure * classPtr;
 };
 
-struct SubjectNameWrapper
+struct SubjectNameWrapper_Scheme
 {
 	char * subject_name;
 	SchemeDataStructure * classPtr;
 };
 
-struct PaperIdWrapper
+struct PaperIdWrapper_Scheme
 {
 	int paper_id;
 	SchemeDataStructure * classPtr;

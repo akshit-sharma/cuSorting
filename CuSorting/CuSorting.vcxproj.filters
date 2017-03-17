@@ -39,6 +39,9 @@
     <ClInclude Include="cuRDStruct.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="GPU_Sorting_Functions.cuh">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp">
@@ -56,14 +59,19 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="cuSource.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="GlobalHeader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="cuBiggerSource.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="GPU_Sorting_Functions.cu">
       <Filter>Source</Filter>
-    </ClCompile>
+    </CudaCompile>
+    <CudaCompile Include="cuSource.cu">
+      <Filter>Source</Filter>
+    </CudaCompile>
+    <CudaCompile Include="cuBiggerSource.cu">
+      <Filter>Source</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

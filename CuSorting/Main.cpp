@@ -6,11 +6,16 @@
 #include <stdio.h>
 
 #include "Main.h"
-#include "BiggerSource.h"
 #include "Source.h"
+#include "BiggerSource.h"
+#include "cuSource.h"
+#include "cuBiggerSource.h"
 
 Source source;
 BiggerSource bigsource;
+
+CuSource cuSource;
+CuBiggerSource cuBiggerSource;
 
 double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
@@ -114,6 +119,9 @@ int main(int argc, char ** argv)
 	main_class * source_obj = &source;
 	main_class * big_source_obj = &bigsource;
 
+	main_class * cu_source_obj = &cuSource;
+	main_class * cu_big_source_obj = &cuBiggerSource;
+
 	double * sort_small;
 	double * sort_big;
 
@@ -126,22 +134,27 @@ int main(int argc, char ** argv)
 	sort_big = &f2;
 
 	if(!skip_quick_cpu){
-		call_runsort("quicksort", 2, "paper_id", 3, "paper_id");
-		call_runsort("quicksort", 4, "subjName", 5, "name");
-		call_runsort("quicksort", 6, "InstiName", 7, "rollnum.");
+		both_call_runsort("quicksort", 2, "paper_id", 3, "paper_id");
+		both_call_runsort("quicksort", 4, "subjName", 5, "name");
+		both_call_runsort("quicksort", 6, "InstiName", 7, "rollnum.");
 	}
 
 	if(!skip_shell_cpu){
-		call_runsort("shellsort", 8, "paper_id", 9, "paper_id");
-		call_runsort("shellsort", 10, "subjName", 11, "name");
-		call_runsort("shellsort", 12, "InstiName", 13, "rollnum.");
+		both_call_runsort("shellsort", 8, "paper_id", 9, "paper_id");
+		both_call_runsort("shellsort", 10, "subjName", 11, "name");
+		both_call_runsort("shellsort", 12, "InstiName", 13, "rollnum.");
 	}
 
-	if (!skip_bubble_cpu) {
+	if (!skip_bubble_cpu) 
 		call_runsort("bubblesort", 14, "paper_id", 15, "paper_id");
-		call_runsort("bubblesort", 16, "subjName", 17, "name");
-		call_runsort("bubblesort", 18, "InstiName", 19, "rollnum.");
-	}
+	call_runsort_gpu("bubblesort", 14, "paper_id", 15, "paper_id");
+	if (!skip_bubble_cpu)
+		call_runsort_gpu("bubblesort", 16, "subjName", 17, "name");
+	call_runsort_gpu("bubblesort", 16, "subjName", 17, "name");
+	if (!skip_bubble_cpu)
+		call_runsort_gpu("bubblesort", 18, "InstiName", 19, "rollnum.");
+	call_runsort_gpu("bubblesort", 18, "InstiName", 19, "rollnum.");
+
 	
 	printf_stream(stdout, "\n");
 

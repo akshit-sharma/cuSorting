@@ -2,13 +2,13 @@
 #include "BiggerSource.h"
 #include "cuRDStruct.h"
 
-class CuBiggerSource : protected BiggerSource
+class CuBiggerSource : public BiggerSource
 {
-	struct PaperIdWrapper * paperIdWrapper;
-	struct RollNumberWrapper * rollNumberWrapper;
+	struct PaperIdWrapper_Results * paperIdWrapper;
+	struct RollNumberWrapper_Results * rollNumberWrapper;
 
-	struct PaperIdWrapper * d_paperIdWrapper;
-	struct RollNumberWrapper * d_rollNumberWrapper;
+	struct PaperIdWrapper_Results * d_paperIdWrapper;
+	struct RollNumberWrapper_Results * d_rollNumberWrapper;
 
 public:
 	virtual void MemAllo(const char* file_name);
