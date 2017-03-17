@@ -9,6 +9,64 @@
 
 int Source::init_num = 0;
 
+void Source::sort(int column)
+{
+	if (column == 1)
+	{
+		quicksort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 2)
+	{
+		quicksort(subject_name, 0, rows - 1);
+		sorted_col_string = subject_name;
+		sorted_col_type = string;
+	}
+	if (column == 3)
+	{
+		quicksort(institution_name, 0, rows - 1);
+		sorted_col_string = institution_name;
+		sorted_col_type = string;
+	}
+	if (column == 4)
+	{
+		shellsort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 5)
+	{
+		shellsort(subject_name, 0, rows - 1);
+		sorted_col_string = subject_name;
+		sorted_col_type = string;
+	}
+	if (column == 6)
+	{
+		shellsort(institution_name, 0, rows - 1);
+		sorted_col_string = institution_name;
+		sorted_col_type = string;
+	}
+	if (column == 7)
+	{
+		bubblesort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 8)
+	{
+		bubblesort(subject_name, 0, rows - 1);
+		sorted_col_string = subject_name;
+		sorted_col_type = string;
+	}
+	if (column == 9)
+	{
+		bubblesort(institution_name, 0, rows - 1);
+		sorted_col_string = institution_name;
+		sorted_col_type = string;
+	}
+}
+
 size_t Source::getFileLines(const char* file_name) 
 {
 	size_t lines = -1;
@@ -396,65 +454,6 @@ void Source::MemFree()
     delete [] (schemeDataStructure);
 
 }
-
-void Source::sort(int column)
-{
-	if (column == 1)
-	{
-		quicksort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 2)
-	{
-		quicksort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column == 3)
-	{
-		quicksort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
-	}
-	if (column == 4)
-	{
-		shellsort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 5)
-	{
-		shellsort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column == 6)
-	{
-		shellsort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
-	}
-	if (column == 7)
-	{
-		bubblesort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 8)
-	{
-		bubblesort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column == 9)
-	{
-		bubblesort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
-	}
-}
-
 
 void Source::shellsort(std::string* toSort, size_t low, size_t high)
 {

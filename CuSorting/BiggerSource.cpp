@@ -9,6 +9,57 @@
 
 int BiggerSource::init_num = 0;
 
+void BiggerSource::sort(int column)
+{
+
+	if (column == 1) {
+		quicksort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 2) {
+		quicksort(name, 0, rows - 1);
+		sorted_col_string = name;
+		sorted_col_type = string;
+	}
+	if (column == 3) {
+		quicksort(rollnumber, 0, rows - 1);
+		sorted_col_long = rollnumber;
+		sorted_col_type = longe;
+	}
+	if (column == 4) {
+		shellsort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 5) {
+		shellsort(name, 0, rows - 1);
+		sorted_col_string = name;
+		sorted_col_type = string;
+	}
+	if (column == 6) {
+		shellsort(rollnumber, 0, rows - 1);
+		sorted_col_long = rollnumber;
+		sorted_col_type = longe;
+	}
+	if (column == 7) {
+		bubblesort(paper_id, 0, rows - 1);
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+	}
+	if (column == 8) {
+		bubblesort(name, 0, rows - 1);
+		sorted_col_string = name;
+		sorted_col_type = string;
+	}
+	if (column == 9) {
+		bubblesort(rollnumber, 0, rows - 1);
+		sorted_col_long = rollnumber;
+		sorted_col_type = longe;
+	}
+
+}
+
 size_t BiggerSource::getFileLines(const char* file_name)
 {
 	size_t lines = -1;
@@ -358,57 +409,6 @@ void BiggerSource::MemFree()
     delete [] name;
 
     delete [] resultsDataStructure;
-
-}
-
-void BiggerSource::sort(int column)
-{
-
-	if (column == 1) {
-		quicksort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 2) {
-		quicksort(name, 0, rows - 1);
-		sorted_col_string = name;
-		sorted_col_type = string;
-	}
-	if (column == 3) {
-		quicksort(rollnumber, 0, rows - 1);
-		sorted_col_long = rollnumber;
-		sorted_col_type = longe;
-	}
-	if (column == 4) {
-		shellsort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 5) {
-		shellsort(name, 0, rows - 1);
-		sorted_col_string = name;
-		sorted_col_type = string;
-	}
-	if (column == 6) {
-		shellsort(rollnumber, 0, rows - 1);
-		sorted_col_long = rollnumber;
-		sorted_col_type = longe;
-	}
-	if (column == 7) {
-		bubblesort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column == 8) {
-		bubblesort(name, 0, rows - 1);
-		sorted_col_string = name;
-		sorted_col_type = string;
-	}
-	if (column == 9) {
-		bubblesort(rollnumber, 0, rows - 1);
-		sorted_col_long = rollnumber;
-		sorted_col_type = longe;
-	}
 
 }
 
