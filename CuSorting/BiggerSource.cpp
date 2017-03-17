@@ -220,13 +220,14 @@ void BiggerSource::readFile(const char* file_name, int column)
 
 
 	// Value is 40
-	//printf_stream(stdout, "Max length of name is %zu \n", maxLength_name);
+//	printf_stream(stdout, "Max length of name is %zu \n", maxLength_name);
 
-	// Value is 45340947
-	//if (overpassed_name != NULL)
-	//	printf_stream(stdout, "Value of name length %zu & bool = %d \n", length_name, overpassed_name);
-	//else
-	//	printf_stream(stdout, "Value of name length %zu \n", length_name);
+	// Value is 45340947 Windows
+	// 42041167 ubuntu
+//	if (overpassed_name != NULL)
+//		printf_stream(stdout, "Value of name length %zu & bool = %d \n", length_name, overpassed_name);
+//	else
+//		printf_stream(stdout, "Value of name length %zu \n", length_name);
 
 
     file.close();

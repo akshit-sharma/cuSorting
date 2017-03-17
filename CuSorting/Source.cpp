@@ -256,22 +256,24 @@ void Source::readFile(const char* file_name, int column)
 	}
 
 	// Value is 102
-	//printf_stream(stdout, "Max length of inst. is %zu \n", maxLength_inti);
+//	printf_stream(stdout, "Max length of inst. is %zu \n", maxLength_inti);
 	
 	// Value is 114
-	//printf_stream(stdout, "Max length of subj. is %zu \n", maxLength_subj);
+//	printf_stream(stdout, "Max length of subj. is %zu \n", maxLength_subj);
 
-	// Value is 11330242
-	//if(overpassed_inst != NULL)
-	//printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_institution_name, overpassed_inst);
-	//else
-	//	printf_stream(stdout, "Value of inst. length %zu \n", length_institution_name);
+	// Value is 11330242 Windows
+	// 10666951 ubuntu
+//	if(overpassed_inst != NULL)
+//		printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_institution_name, overpassed_inst);
+//	else
+//		printf_stream(stdout, "Value of inst. length %zu \n", length_institution_name);
 	
-	// Value is 6812514
-	//if(overpassed_subj != NULL)
-	//printf_stream(stdout, "Value of subj. length %zu & bool = %d \n", length_subject_name, overpassed_subj);
-	//else
-	//	printf_stream(stdout, "Value of subj. length %zu \n", length_subject_name);
+	// Value is 6812514 Windows
+	// 6437896 ubuntu
+//	if(overpassed_subj != NULL)
+//		printf_stream(stdout, "Value of subj. length %zu & bool = %d \n", length_subject_name, overpassed_subj);
+//	else
+//		printf_stream(stdout, "Value of subj. length %zu \n", length_subject_name);
 
 	file.close();
 
