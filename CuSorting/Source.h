@@ -10,10 +10,6 @@ class Source : public virtual main_class
 {
 private:
 
-	std::vector <std::string> headers;
-
-	static int init_num;
-
 	std::string * sorted_col_string;
 	int * sorted_col_int;
 
@@ -39,6 +35,11 @@ private:
 	void bubblesort(int* toSort, size_t low, size_t high);
 
 protected:
+	std::vector <std::string> headers;
+
+	static int init_num;
+
+
 	int * paper_id;
 	std::string * subject_name;
 	std::string * institution_name;

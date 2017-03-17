@@ -10,13 +10,9 @@ class BiggerSource : public virtual main_class
 {
 private:
 
-    std::vector<std::string> headers;
-
 	int * sorted_col_int;
 	long long * sorted_col_long;
 	std::string * sorted_col_string;
-
-	static int init_num;
 
 	enum type
 	{
@@ -44,6 +40,11 @@ private:
 	void bubblesort(int* toSort, size_t low, size_t high);
 
 protected:
+	std::vector<std::string> headers;
+
+	static int init_num;
+
+
 	int * paper_id;
 	long long * rollnumber;
 	std::string * name;

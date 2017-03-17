@@ -54,6 +54,7 @@ void CuSource::MemAllo(const char* file_name)
 			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyHostToDevice
 		);
+		free(paperIdWrapper);
 		break;
 	case 2:
 		// NOT READY
@@ -79,7 +80,6 @@ void CuSource::MemFree()
 		break;
 	case 1:
 		cudaFree(d_paperIdWrapper);
-		free(paperIdWrapper);
 		break;
 	case 2:
 		//	cudaFree(d_subject_name);
@@ -89,4 +89,77 @@ void CuSource::MemFree()
 
 	Source::MemFree();
 }
+
+
+
+void CuSource::print_table(const char * file_name)
+{
+
+	switch (column % 3)
+	{
+	case 0:
+		//	cudaFree(d_institution_name);
+		//	delete[](h_institution_name);
+		break;
+	case 1:
+		cudaMemcpy(paperIdWrapper, d_paperIdWrapper,
+			rows * sizeof(struct PaperIdWrapper_Scheme),
+			cudaMemcpyDeviceToHost
+		);
+		for (size_t i = 0; i < rows; i++) {
+			schemeDataStructure[i] = *paperIdWrapper[i].classPtr;
+		}
+		write_file(file_name, schemeDataStructure);
+		break;
+	case 2:
+		//	cudaFree(d_subject_name);
+		//	delete[](h_subject_name);
+		break;
+	}
+
+}
+
+void CuSource::write_file(const char * file_name, SchemeDataStructure * schemeDataStructure)
+{
+	FILE * p_file;
+	std::string sorted_file_name(file_name);
+
+	sorted_file_name.replace(sorted_file_name.end() - 4,
+		sorted_file_name.end(), "_sm_gpu_");
+
+	sorted_file_name += std::to_string(init_num);
+	sorted_file_name += ".csv";
+
+	fopen_stream(&p_file, sorted_file_name.c_str(), "w");
+
+	std::vector<std::string>::iterator iter;
+	for (iter = headers.begin();
+		iter != headers.end(); ++iter) {
+		if (iter != headers.begin())
+			printf_stream(p_file, ",");
+		printf_stream(p_file, "%s", (*iter).c_str());
+	}
+
+	printf_stream(p_file, "\n");
+
+	struct SchemeDSHolder schemeDSHolder;
+
+	for (size_t i = 0; i < rows; i++)
+	{
+
+		schemeDataStructure[i].getValue(&schemeDSHolder);
+
+		printf_stream(p_file, "%d,%s,%lld,%s,%s,%s,%d,%s,%d,%d,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s\n",
+			schemeDSHolder.scheme_prog_code, schemeDSHolder.prog_name.c_str(), schemeDSHolder.scheme_id, schemeDSHolder.prog_sem_year.c_str(),
+			schemeDSHolder.prepared_date.c_str(), schemeDSHolder.declared_date.c_str(), schemeDSHolder.institution_code, schemeDSHolder.institution_name.c_str(),
+			schemeDSHolder.s_number, schemeDSHolder.paper_id, schemeDSHolder.paper_code.c_str(), schemeDSHolder.subject_name.c_str(), schemeDSHolder.credits,
+			schemeDSHolder.type.c_str(), schemeDSHolder.exam.c_str(), schemeDSHolder.mode.c_str(), schemeDSHolder.kind.c_str(),
+			schemeDSHolder.minor.c_str(), schemeDSHolder.major.c_str(), schemeDSHolder.max_marks.c_str(), schemeDSHolder.pass_marks.c_str())
+			;
+
+	}
+
+	fclose(p_file);
+}
+
 
