@@ -735,3 +735,50 @@ bool Source::compare_isMore(std::string str1, std::string str2)
 
 }
 
+bool Source::checkComputation()
+{
+	struct SchemeDSHolder schemeDSHolder;
+
+	int paper_id_old, paper_id_new;
+	std::string subject_name_old, subject_name_new;
+	std::string institution_name_old, institution_name_new;
+
+	paper_id_old = INT_MIN;
+	subject_name_old = "";
+	institution_name_old = "";
+
+	for (size_t i = 0; i < rows; i++) {
+		schemeDataStructure[i].getValue(&schemeDSHolder);
+
+		switch (column % 3)
+		{
+		case 0:
+			institution_name_new = schemeDSHolder.institution_name;
+			if (compare_isMore(institution_name_old, institution_name_new))
+				return false;
+			institution_name_old = institution_name_new;
+			break;
+		case 1:
+			paper_id_new = schemeDSHolder.paper_id;
+			if (paper_id_old > paper_id_new)
+				return false;
+			paper_id_old = paper_id_new;
+			break;
+		case 2:
+			subject_name_new = schemeDSHolder.subject_name;
+			if (compare_isMore(subject_name_old, subject_name_new))
+				return false;
+			subject_name_old = subject_name_new;
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	return true;
+
+}
+
+
+

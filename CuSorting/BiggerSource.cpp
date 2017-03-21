@@ -800,3 +800,49 @@ bool BiggerSource::compare_isMore(std::string str1, std::string str2)
 	return false;
 
 }
+
+
+bool BiggerSource::checkComputation() 
+{
+	struct ResultsDSHolder resultsDSHolder;
+
+	int paper_id_old, paper_id_new;
+	long long rollnumber_old, rollnumber_new;
+	std::string name_old, name_new;
+
+	paper_id_old = INT_MIN;
+	rollnumber_old = INT_MIN;
+	name_old = "";
+
+	for (size_t i = 0; i < rows; i++) {
+		resultsDataStructure[i].getValue(&resultsDSHolder);
+
+		switch (column%3)
+		{
+		case 0:
+			paper_id_new = resultsDSHolder.paper_id;
+			if (paper_id_old > paper_id_new)
+				return false;
+			paper_id_old = paper_id_new;
+			break;
+		case 1:
+			rollnumber_new = resultsDSHolder.rollnumber;
+			if (rollnumber_old > rollnumber_new)
+				return false;
+			rollnumber_old = rollnumber_new;
+			break;
+		case 2:
+			name_new = resultsDSHolder.name;
+			if (compare_isMore(name_old,name_new))
+				return false;
+			name_old = name_new;
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	return true;
+
+}

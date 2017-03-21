@@ -59,5 +59,6 @@ public:
 	virtual void sort(int column);
 	void print_table(const char * file_name);
 	virtual void MemFree();
+	virtual bool checkComputation();
 
 };

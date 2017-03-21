@@ -31,4 +31,5 @@ public:
 	virtual void sort(int column) = 0;
 	virtual void print_table(const char * file_name) = 0;
 	virtual void MemFree() = 0;
+	virtual bool checkComputation() = 0;
 };
