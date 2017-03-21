@@ -92,7 +92,7 @@ void CuSource::MemFree()
 
 
 
-void CuSource::print_table(const char * file_name)
+void CuSource::postSorting()
 {
 
 	switch (column % 3)
@@ -109,7 +109,6 @@ void CuSource::print_table(const char * file_name)
 		for (size_t i = 0; i < rows; i++) {
 			schemeDataStructure[i] = *paperIdWrapper[i].classPtr;
 		}
-		write_file(file_name, schemeDataStructure);
 		break;
 	case 2:
 		//	cudaFree(d_subject_name);

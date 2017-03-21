@@ -57,6 +57,7 @@ public:
 	virtual void MemAllo(const char* file_name);
 	void readFile(const char * file_name, int column);
 	virtual void sort(int column);
+	virtual void postSorting();
 	void print_table(const char * file_name);
 	virtual void MemFree();
 	virtual bool checkComputation();

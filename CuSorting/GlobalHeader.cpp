@@ -7,4 +7,4 @@ const bool skip_bubble_cpu = true;
 
 const bool skip_input = false;
 const bool skip_sorting = false;
-const bool skip_output = false;
+const bool skip_check_output = false;

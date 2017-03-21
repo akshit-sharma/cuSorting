@@ -67,6 +67,11 @@ void Source::sort(int column)
 	}
 }
 
+void Source::postSorting()
+{
+
+}
+
 size_t Source::getFileLines(const char* file_name) 
 {
 	size_t lines = -1;

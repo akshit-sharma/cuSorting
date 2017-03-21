@@ -21,7 +21,8 @@ double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
 double memory_alloc_time;
 double sort_duration;
-double avg_write_times_small, avg_write_times_big;
+double post_sort_duration;
+double check_sort_calc;
 double memory_dealloc_time;
 
 const char * file_name_small;
@@ -62,18 +63,17 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	sort_duration = duration;
 
 	start = std::clock();
-	if(!skip_output)
-	source_obj->print_table(output_file_name);
-	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	source_obj->postSorting();
+	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	
+	start = std::clock();
+	if (!skip_check_output)
+		source_obj->checkComputation();
+	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+
 	start = std::clock();
 	source_obj->MemFree();
 	memory_dealloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
-	
-	if (value % 2 == 0)
-		avg_write_times_small += duration;
-	else
-		avg_write_times_big += duration;
 	 
 	if (value % 2 == 0)
 		small_times++;
@@ -103,15 +103,14 @@ int main(int argc, char ** argv)
 
 	avg_read_times_big = 0;
 	avg_read_times_small = 0;
-	avg_write_times_big = 0;
-	avg_write_times_small = 0;
+
 
 	small_times = 0;
 	big_times = 0;
 
 
-	printf_stream(stdout, " %10s | %10s | %10s | %10s | %10s \n",
-		"technique", "memAlloc", "colData", "timeTaken", "memDealloc" 
+	printf_stream(stdout, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s \n",
+		"technique", "dataset", "ALU", "memAlloc", "colData", "timeTaken", "PostEvent", "memDealloc" 
 	);
 
 
@@ -160,8 +159,6 @@ int main(int argc, char ** argv)
 
 	printf_stream(stdout, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
 	printf_stream(stdout, "Avg big file read time %lf\n", (avg_read_times_big / big_times));
-	printf_stream(stdout, "Avg small file write time %lf\n", (avg_write_times_small / small_times));
-	printf_stream(stdout, "Avg big file write time %lf\n", (avg_write_times_big / big_times));
 
 	printf_stream(stdout, "\n");
 	printf_stream(stdout, "\n");

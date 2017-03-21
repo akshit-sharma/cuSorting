@@ -27,7 +27,7 @@ extern const bool skip_bubble_cpu;
 
 extern const bool skip_input;
 extern const bool skip_sorting;
-extern const bool skip_output;
+extern const bool skip_check_output;
 
 #endif
 

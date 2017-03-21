@@ -96,7 +96,7 @@ void CuBiggerSource::MemFree() {
 }
 
 
-void CuBiggerSource::print_table(const char * file_name)
+void CuBiggerSource::postSorting()
 {
 	switch (column % 3)
 	{
@@ -108,7 +108,6 @@ void CuBiggerSource::print_table(const char * file_name)
 		for (size_t i = 0; i < rows; i++) {
 			resultsDataStructure[i] = *paperIdWrapper[i].classPtr;
 		}
-		write_file(file_name, resultsDataStructure);
 		break;
 	case 1:
 		// TODO: 
@@ -121,7 +120,6 @@ void CuBiggerSource::print_table(const char * file_name)
 		for (size_t i = 0; i < rows; i++) {
 			resultsDataStructure[i] = *rollNumberWrapper[i].classPtr;
 		}
-		write_file(file_name, resultsDataStructure);
 		break;
 	}
 

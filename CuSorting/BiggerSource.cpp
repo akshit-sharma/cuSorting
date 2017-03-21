@@ -60,6 +60,11 @@ void BiggerSource::sort(int column)
 
 }
 
+void BiggerSource::postSorting()
+{
+
+}
+
 size_t BiggerSource::getFileLines(const char* file_name)
 {
 	size_t lines = -1;
