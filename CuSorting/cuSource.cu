@@ -54,7 +54,6 @@ void CuSource::MemAllo(const char* file_name)
 			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyHostToDevice
 		);
-		free(paperIdWrapper);
 		break;
 	case 2:
 		// NOT READY
@@ -80,6 +79,7 @@ void CuSource::MemFree()
 		break;
 	case 1:
 		cudaFree(d_paperIdWrapper);
+		free(paperIdWrapper);
 		break;
 	case 2:
 		//	cudaFree(d_subject_name);

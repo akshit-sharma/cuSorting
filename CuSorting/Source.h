@@ -59,6 +59,7 @@ public:
 	virtual void selectColumn(int column);
 	virtual void MemAllo(const char* file_name);
 	void readFile(const char * file_name);
+	virtual void preSorting();
 	virtual void sort();
 	virtual void postSorting();
 	void print_table(const char * file_name);

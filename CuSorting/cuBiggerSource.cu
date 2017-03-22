@@ -51,7 +51,6 @@ void CuBiggerSource::MemAllo(const char* file_name)
 			rows * sizeof(struct PaperIdWrapper_Results),
 			cudaMemcpyHostToDevice
 		);
-		free(paperIdWrapper);
 		break;
 	case 1:
 		// TODO: 
@@ -67,7 +66,6 @@ void CuBiggerSource::MemAllo(const char* file_name)
 			rows * sizeof(struct PaperIdWrapper_Results),
 			cudaMemcpyHostToDevice
 		);
-		free(rollNumberWrapper);
 		break;
 
 	}
@@ -80,11 +78,13 @@ void CuBiggerSource::MemFree() {
 	{
 	case 0:
 		cudaFree(d_paperIdWrapper);
+		free(paperIdWrapper);
 		break;
 	case 1:
 		break;
 	case 2:
 		cudaFree(d_rollNumberWrapper);
+		free(rollNumberWrapper);
 		break;
 	default:
 		break;

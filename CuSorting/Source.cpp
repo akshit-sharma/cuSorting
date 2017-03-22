@@ -9,61 +9,63 @@
 
 int Source::init_num = 0;
 
+void Source::preSorting() {
+
+	switch (column_decide%3)
+	{
+
+	case 0:
+		sorted_col_string = institution_name;
+		sorted_col_type = string;
+		break;
+	case 1:
+		sorted_col_int = paper_id;
+		sorted_col_type = inte;
+		break;
+	case 2:
+		sorted_col_string = subject_name;
+		sorted_col_type = string;
+		break;
+
+	default:
+		break;
+	}
+
+}
+
 void Source::sort()
 {
-	if (column_decide == 1)
+	switch (column_decide)
 	{
+	case 1:
 		quicksort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column_decide == 2)
-	{
+		break;
+	case 2:
 		quicksort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column_decide == 3)
-	{
+		break;
+	case 3:
 		quicksort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
-	}
-	if (column_decide == 4)
-	{
+		break;
+	case 4:
 		shellsort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column_decide == 5)
-	{
+		break;
+	case 5:
 		shellsort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column_decide == 6)
-	{
+		break;
+	case 6:
 		shellsort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
-	}
-	if (column_decide == 7)
-	{
+		break;
+	case 7:
 		bubblesort(paper_id, 0, rows - 1);
-		sorted_col_int = paper_id;
-		sorted_col_type = inte;
-	}
-	if (column_decide == 8)
-	{
+		break;
+	case 8:
 		bubblesort(subject_name, 0, rows - 1);
-		sorted_col_string = subject_name;
-		sorted_col_type = string;
-	}
-	if (column_decide == 9)
-	{
+		break;
+	case 9:
 		bubblesort(institution_name, 0, rows - 1);
-		sorted_col_string = institution_name;
-		sorted_col_type = string;
+		break;
+	default:
+		break;
 	}
 }
 
@@ -709,7 +711,7 @@ bool Source::compare_isLess(std::string str1, std::string str2)
 		++i;
 	}
 
-	if (str1.length() > str2.length())
+	if (str1.length() < str2.length())
 		return true;
 
 	return false;

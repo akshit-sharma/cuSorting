@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+#include <cuda_runtime.h>
+
 #include "Main.h"
 #include "Source.h"
 #include "BiggerSource.h"
@@ -24,6 +26,8 @@ double sort_duration;
 double post_sort_duration;
 double check_sort_calc;
 double memory_dealloc_time;
+
+bool computationCheckAnswer;
 
 const char * file_name_small;
 const char * file_name_big;
@@ -58,6 +62,8 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	else
 		avg_read_times_big += duration;
 
+	source_obj->preSorting();
+
 	start = std::clock();
 	if(!skip_sorting)
 	source_obj->sort();
@@ -70,8 +76,11 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	
 	start = std::clock();
 	if (!skip_check_output)
-		source_obj->checkComputation();
+		computationCheckAnswer = source_obj->checkComputation();
 	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+
+	if(!computationCheckAnswer)
+		source_obj->print_table(output_file_name);
 
 	start = std::clock();
 	source_obj->MemFree();
@@ -99,6 +108,8 @@ int main(int argc, char ** argv)
 		exit(1);
 	}
 
+	bool hasCudaEnabledGPU = detectCudaEnabledGPU();
+
 	file_name_small = argv[1];
 	file_name_big = argv[2];
 	output_file_name = argv[3];
@@ -106,17 +117,14 @@ int main(int argc, char ** argv)
 	avg_read_times_big = 0;
 	avg_read_times_small = 0;
 
-
 	small_times = 0;
 	big_times = 0;
 
 
-	printf_stream(stdout, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s \n",
-		"technique", "dataset", "ALU", "memAlloc", "colData", "timeTaken", "PostEvent", "memDealloc" 
+	printf_stream(stdout, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+		"technique", "dataset", "ALU", "memAlloc", "colData", "timeTaken", "PostEvent", "memDealloc", "Correct?" 
 	);
-
-
-
+	
 	main_class * source_obj = &source;
 	main_class * big_source_obj = &bigsource;
 
@@ -158,4 +166,48 @@ int main(int argc, char ** argv)
 	 
 
 }
+
+bool detectCudaEnabledGPU()
+{
+	int deviceCount = 0;
+	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
+
+	if (error_id != cudaSuccess)
+	{
+		printf("cudaGetDeviceCount returned %d\n-> %s\n", (int)error_id, cudaGetErrorString(error_id));
+		printf("Result = FAIL\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// This function call returns 0 if there are no CUDA capable devices.
+	if (deviceCount == 0)
+	{
+		printf("There are no available device(s) that support CUDA\n");
+		return false;
+	}
+	else
+	{
+		printf("Detected %d CUDA Capable device(s)\n", deviceCount);
+		
+		int dev = 0, driverVersion = 0, runtimeVersion = 0;
+
+		cudaSetDevice(dev);
+		cudaDeviceProp deviceProp;
+		cudaGetDeviceProperties(&deviceProp, dev);
+
+		printf("\nDevice %d: \"%s\"\n", dev, deviceProp.name);
+
+		// Console log
+		cudaDriverGetVersion(&driverVersion);
+		cudaRuntimeGetVersion(&runtimeVersion);
+		printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
+		printf("  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
+
+		printf("\n\n");
+
+		return true;
+	}
+	
+}
+
 
