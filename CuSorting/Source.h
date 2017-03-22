@@ -46,7 +46,9 @@ protected:
 
 	SchemeDataStructure * schemeDataStructure;
 
-	int column;
+	int column_decide;
+
+//	int column;
 
 	size_t length_institution_name, length_subject_name;
 	size_t maxLength_inti, maxLength_subj;
@@ -54,9 +56,10 @@ protected:
 	size_t rows;
 
 public:
+	virtual void selectColumn(int column);
 	virtual void MemAllo(const char* file_name);
-	void readFile(const char * file_name, int column);
-	virtual void sort(int column);
+	void readFile(const char * file_name);
+	virtual void sort();
 	virtual void postSorting();
 	void print_table(const char * file_name);
 	virtual void MemFree();

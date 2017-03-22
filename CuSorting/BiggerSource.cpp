@@ -9,50 +9,50 @@
 
 int BiggerSource::init_num = 0;
 
-void BiggerSource::sort(int column)
+void BiggerSource::sort()
 {
 
-	if (column == 1) {
+	if (column_decide == 1) {
 		quicksort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 2) {
+	if (column_decide == 2) {
 		quicksort(name, 0, rows - 1);
 		sorted_col_string = name;
 		sorted_col_type = string;
 	}
-	if (column == 3) {
+	if (column_decide == 3) {
 		quicksort(rollnumber, 0, rows - 1);
 		sorted_col_long = rollnumber;
 		sorted_col_type = longe;
 	}
-	if (column == 4) {
+	if (column_decide == 4) {
 		shellsort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 5) {
+	if (column_decide == 5) {
 		shellsort(name, 0, rows - 1);
 		sorted_col_string = name;
 		sorted_col_type = string;
 	}
-	if (column == 6) {
+	if (column_decide == 6) {
 		shellsort(rollnumber, 0, rows - 1);
 		sorted_col_long = rollnumber;
 		sorted_col_type = longe;
 	}
-	if (column == 7) {
+	if (column_decide == 7) {
 		bubblesort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 8) {
+	if (column_decide == 8) {
 		bubblesort(name, 0, rows - 1);
 		sorted_col_string = name;
 		sorted_col_type = string;
 	}
-	if (column == 9) {
+	if (column_decide == 9) {
 		bubblesort(rollnumber, 0, rows - 1);
 		sorted_col_long = rollnumber;
 		sorted_col_type = longe;
@@ -89,7 +89,7 @@ size_t BiggerSource::getFileLines(const char* file_name)
 
 }
 
-void BiggerSource::readFile(const char* file_name, int column)
+void BiggerSource::readFile(const char* file_name)
 {
 
     std::vector<unsigned char> buffer;
@@ -100,9 +100,7 @@ void BiggerSource::readFile(const char* file_name, int column)
     int category;
 
 	bool overpassed_name = NULL;
-
-	this->column = column;
-
+	
     std::ifstream file(file_name,
         std::ios::binary | std::ios::in);
 
@@ -228,13 +226,13 @@ void BiggerSource::readFile(const char* file_name, int column)
 
             if(line_number!=0){
 
-				if(column%3==0)
+				if(column_decide%3==0)
 					this->rollnumber[line_number-1] = rollnumber;
 
-				if (column%3 == 1)
+				if (column_decide%3 == 1)
 					this->paper_id[line_number - 1] = paper_id;
 
-				if(column%3==2)
+				if(column_decide%3==2)
 					this->name[line_number-1] = std::string(name);
 
                 resultsDataStructure[line_number-1].modifyRDS(
@@ -375,6 +373,11 @@ void BiggerSource::print_table(const char * file_name)
     fclose(p_file);
 	fclose(single_col_file);
 
+}
+
+void BiggerSource::selectColumn(int column)
+{
+	this->column_decide = column;
 }
 
 void BiggerSource::MemAllo(const char* file_name)
@@ -733,7 +736,7 @@ void BiggerSource::swap(size_t index_1, size_t index_2)
 	std::string t_string;
     ResultsDataStructure t_resultsDataStructure;
 
-	switch (column%3)
+	switch (column_decide%3)
 	{
 	case 0:
 		SWAP(temp_long, index_1, index_2, rollnumber);
@@ -822,7 +825,7 @@ bool BiggerSource::checkComputation()
 	for (size_t i = 0; i < rows; i++) {
 		resultsDataStructure[i].getValue(&resultsDSHolder);
 
-		switch (column%3)
+		switch (column_decide%3)
 		{
 		case 0:
 			paper_id_new = resultsDSHolder.paper_id;

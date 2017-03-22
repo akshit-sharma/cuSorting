@@ -4,15 +4,15 @@
 
 #include "GPU_Sorting_Functions.cuh"
 
-void CuSource::sort(int column) {
-	switch (column % 3)
+void CuSource::sort() {
+	switch (column_decide % 3)
 	{
 	case 0:
 		break;
 	case 1:
 		// call sorting kernel with
 		// d_paperIdWrapper
-		switch (column / 3)
+		switch (column_decide / 3)
 		{
 		case 2:
 			odd_even_sort_scheme_paperid<<<NUM_BLOCK,WID_BLOCK>>>(d_paperIdWrapper);
@@ -34,7 +34,7 @@ void CuSource::MemAllo(const char* file_name)
 
 	//cudaMalloc((void **) d_schemeDataStructure, rows * sizeof(SchemeDataStructure));
 
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		// NOT READY
@@ -72,7 +72,7 @@ void CuSource::MemFree()
 {
 	//cudaFree(d_schemeDataStructure);
 
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		//	cudaFree(d_institution_name);
@@ -95,7 +95,7 @@ void CuSource::MemFree()
 void CuSource::postSorting()
 {
 
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		//	cudaFree(d_institution_name);

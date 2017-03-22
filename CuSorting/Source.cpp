@@ -9,57 +9,57 @@
 
 int Source::init_num = 0;
 
-void Source::sort(int column)
+void Source::sort()
 {
-	if (column == 1)
+	if (column_decide == 1)
 	{
 		quicksort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 2)
+	if (column_decide == 2)
 	{
 		quicksort(subject_name, 0, rows - 1);
 		sorted_col_string = subject_name;
 		sorted_col_type = string;
 	}
-	if (column == 3)
+	if (column_decide == 3)
 	{
 		quicksort(institution_name, 0, rows - 1);
 		sorted_col_string = institution_name;
 		sorted_col_type = string;
 	}
-	if (column == 4)
+	if (column_decide == 4)
 	{
 		shellsort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 5)
+	if (column_decide == 5)
 	{
 		shellsort(subject_name, 0, rows - 1);
 		sorted_col_string = subject_name;
 		sorted_col_type = string;
 	}
-	if (column == 6)
+	if (column_decide == 6)
 	{
 		shellsort(institution_name, 0, rows - 1);
 		sorted_col_string = institution_name;
 		sorted_col_type = string;
 	}
-	if (column == 7)
+	if (column_decide == 7)
 	{
 		bubblesort(paper_id, 0, rows - 1);
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
 	}
-	if (column == 8)
+	if (column_decide == 8)
 	{
 		bubblesort(subject_name, 0, rows - 1);
 		sorted_col_string = subject_name;
 		sorted_col_type = string;
 	}
-	if (column == 9)
+	if (column_decide == 9)
 	{
 		bubblesort(institution_name, 0, rows - 1);
 		sorted_col_string = institution_name;
@@ -96,7 +96,7 @@ size_t Source::getFileLines(const char* file_name)
 
 }
 
-void Source::readFile(const char* file_name, int column)
+void Source::readFile(const char* file_name)
 {
 	std::vector<unsigned char> buffer;
 	char temp_var[128];
@@ -113,8 +113,6 @@ void Source::readFile(const char* file_name, int column)
 
 	bool overpassed_inst = NULL;
 	bool overpassed_subj = NULL;
-
-	this->column = column;
 
     for(index=0;index<128;index++)
         temp_var[index] = '\0';
@@ -252,13 +250,13 @@ void Source::readFile(const char* file_name, int column)
 
         if(line_number != 0) {
 			
-        	if(column%3==0)
+        	if(column_decide%3==0)
 				this->institution_name[line_number - 1] = std::string(institution_name);
 
-			if(column%3==1)
+			if(column_decide%3==1)
 				this->paper_id[line_number - 1] = paper_id;
             
-			if(column%3==2)
+			if(column_decide%3==2)
         		this->subject_name[line_number - 1] = std::string(subject_name);
 
 
@@ -423,6 +421,11 @@ void Source::print_table(const char* file_name)
 
 	fclose(p_file);
 	fclose(single_col_file);
+}
+
+void Source::selectColumn(int column)
+{
+	this->column_decide = column;
 }
 
 void Source::MemAllo(const char* file_name)
@@ -668,7 +671,7 @@ void Source::swap(const size_t index_1, const size_t index_2)
     std::string t_string;
     SchemeDataStructure t_schemeDataStructure;
 
-	switch (column%3)
+	switch (column_decide%3)
 	{
 	case 0:
 		SWAP(t_string, index_1, index_2, institution_name);
@@ -755,7 +758,7 @@ bool Source::checkComputation()
 	for (size_t i = 0; i < rows; i++) {
 		schemeDataStructure[i].getValue(&schemeDSHolder);
 
-		switch (column % 3)
+		switch (column_decide % 3)
 		{
 		case 0:
 			institution_name_new = schemeDSHolder.institution_name;

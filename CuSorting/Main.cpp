@@ -35,6 +35,8 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	std::clock_t start;
 	double duration;
 
+	source_obj->selectColumn(value / 2);
+
 	start = std::clock();
 	if (value % 2 == 0)
 		source_obj->MemAllo(file_name_small);
@@ -45,9 +47,9 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	start = std::clock();
 	if(!skip_input){
 		if(value % 2 == 0)
-			source_obj->readFile(file_name_small, value/2);
+			source_obj->readFile(file_name_small);
 		else
-			source_obj->readFile(file_name_big, value/2);
+			source_obj->readFile(file_name_big);
 	}
 	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	
@@ -58,7 +60,7 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 
 	start = std::clock();
 	if(!skip_sorting)
-	source_obj->sort(value/2);
+	source_obj->sort();
 	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	sort_duration = duration;
 
@@ -132,28 +134,17 @@ int main(int argc, char ** argv)
 	sort_small = &f1;
 	sort_big = &f2;
 
-	if(!skip_quick_cpu){
-		both_call_runsort("quicksort", 2, "paper_id", 3, "paper_id");
-		both_call_runsort("quicksort", 4, "subjName", 5, "name");
-		both_call_runsort("quicksort", 6, "InstiName", 7, "rollnum.");
-	}
-
-	if(!skip_shell_cpu){
-		both_call_runsort("shellsort", 8, "paper_id", 9, "paper_id");
-		both_call_runsort("shellsort", 10, "subjName", 11, "name");
-		both_call_runsort("shellsort", 12, "InstiName", 13, "rollnum.");
-	}
-
-	if (!skip_bubble_cpu) 
-		call_runsort("bubblesort", 14, "paper_id", 15, "paper_id");
-	call_runsort_gpu("bubblesort", 14, "paper_id", 15, "paper_id");
-	if (!skip_bubble_cpu)
-		call_runsort_gpu("bubblesort", 16, "subjName", 17, "name");
-	call_runsort_gpu("bubblesort", 16, "subjName", 17, "name");
-	if (!skip_bubble_cpu)
-		call_runsort_gpu("bubblesort", 18, "InstiName", 19, "rollnum.");
-	call_runsort_gpu("bubblesort", 18, "InstiName", 19, "rollnum.");
-
+	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu);
+	both_call_runsort_skip("quicksort", 4, "subjName", 5, "name", skip_quick_cpu);
+	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu);
+	
+	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu);
+	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu);
+	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu);
+	
+	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu);
+	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu);
+	both_call_runsort_skip("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu);
 	
 	printf_stream(stdout, "\n");
 

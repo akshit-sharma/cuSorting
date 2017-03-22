@@ -7,13 +7,13 @@
 #define NUM_BLOCK 65535
 #define WID_BLOCK 1024
 
-void CuBiggerSource::sort(int column) {
-	switch (column % 3)
+void CuBiggerSource::sort() {
+	switch (column_decide % 3)
 	{
 	case 0:
 		//call sorting kernel with
 		//d_paperIdWrapper
-		switch (column / 3)
+		switch (column_decide / 3)
 		{
 		case 2:
 			odd_even_sort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
@@ -36,9 +36,9 @@ void CuBiggerSource::sort(int column) {
 
 void CuBiggerSource::MemAllo(const char* file_name)
 {
-	CuBiggerSource::MemAllo(file_name);
+	BiggerSource::MemAllo(file_name);
 
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		paperIdWrapper = (struct PaperIdWrapper_Results *) malloc(rows * sizeof(struct PaperIdWrapper_Results));
@@ -76,7 +76,7 @@ void CuBiggerSource::MemAllo(const char* file_name)
 
 void CuBiggerSource::MemFree() {
 
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		cudaFree(d_paperIdWrapper);
@@ -98,7 +98,7 @@ void CuBiggerSource::MemFree() {
 
 void CuBiggerSource::postSorting()
 {
-	switch (column % 3)
+	switch (column_decide % 3)
 	{
 	case 0:
 		cudaMemcpy(paperIdWrapper, d_paperIdWrapper,

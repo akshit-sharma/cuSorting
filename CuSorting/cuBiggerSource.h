@@ -15,9 +15,8 @@ class CuBiggerSource : public BiggerSource
 
 public:
 	virtual void MemAllo(const char* file_name);
-	virtual void sort(int column);
+	virtual void sort();
 	virtual void postSorting();
-	virtual void print_table(const char * file_name);
 	virtual void MemFree();
 
 };
