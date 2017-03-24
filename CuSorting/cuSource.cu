@@ -12,15 +12,23 @@ void CuSource::sort() {
 	case 1:
 		// call sorting kernel with
 		// d_paperIdWrapper
-		switch (column_decide / 3)
+		switch ((column_decide-1) / 3)
 		{
+		case 0:
+			quicksort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
+			cudaDeviceSynchronize();
+			break;
+		case 1:
+			shellsort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
+			cudaDeviceSynchronize();
+			break;
 		case 2:
 			odd_even_sort_scheme_paperid<<<NUM_BLOCK,WID_BLOCK>>>(d_paperIdWrapper);
 			cudaDeviceSynchronize();
+			break;
 		default:
 			break;
 		}
-
 		break;
 	case 2:
 		break;
