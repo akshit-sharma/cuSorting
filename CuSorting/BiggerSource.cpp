@@ -72,7 +72,7 @@ void BiggerSource::sort()
 
 void BiggerSource::postSorting()
 {
-
+	return;
 }
 
 size_t BiggerSource::getFileLines(const char* file_name)

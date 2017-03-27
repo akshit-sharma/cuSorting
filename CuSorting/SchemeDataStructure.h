@@ -56,6 +56,10 @@ public:
 		SchemeDS(COMMA)
 	);
 
+	decltype(paper_id) getPaperId();
+
+	void setValue(SchemeDataStructure * schemeDataStructure);
+
 	void getValue(struct SchemeDSHolder * schemeDSHolder);
 
 };

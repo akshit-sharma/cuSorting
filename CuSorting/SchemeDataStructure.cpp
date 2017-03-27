@@ -1,5 +1,9 @@
 ﻿#include "SchemeDataStructure.h"
 
+decltype(SchemeDataStructure::paper_id) SchemeDataStructure::getPaperId() {
+	return paper_id;
+}
+
 void SchemeDataStructure::modifySDS(
 		SchemeDS(COMMA)
 )
@@ -53,5 +57,32 @@ void SchemeDataStructure::getValue(struct SchemeDSHolder * schemeDSHolder)
     schemeDSHolder->major = this->major;
     schemeDSHolder->max_marks = this->max_marks;
     schemeDSHolder->pass_marks = this->pass_marks;
+
+}
+
+void SchemeDataStructure::setValue(SchemeDataStructure * schemeDataStructure)
+{
+
+	this->scheme_prog_code = schemeDataStructure->scheme_prog_code;
+	this->prog_name = schemeDataStructure->prog_name;
+	this->scheme_id = schemeDataStructure->scheme_id;
+	this->prog_sem_year = schemeDataStructure->prog_sem_year;
+	this->prepared_date = schemeDataStructure->prepared_date;
+	this->declared_date = schemeDataStructure->declared_date;
+	this->institution_code = schemeDataStructure->institution_code;
+	this->institution_name = schemeDataStructure->institution_name;
+	this->s_number = schemeDataStructure->s_number;
+	this->paper_id = schemeDataStructure->paper_id;
+	this->paper_code = schemeDataStructure->paper_code;
+	this->subject_name = schemeDataStructure->subject_name;
+	this->credits = schemeDataStructure->credits;
+	this->type = schemeDataStructure->type;
+	this->exam = schemeDataStructure->exam;
+	this->mode = schemeDataStructure->mode;
+	this->kind = schemeDataStructure->kind;
+	this->minor = schemeDataStructure->minor;
+	this->major = schemeDataStructure->major;
+	this->max_marks = schemeDataStructure->max_marks;
+	this->pass_marks = schemeDataStructure->pass_marks;
 
 }

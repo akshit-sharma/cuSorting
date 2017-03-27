@@ -17,6 +17,7 @@ class CuSource : public Source
 
 public:
 	virtual void MemAllo(const char* file_name);
+	virtual void preSorting();
 	virtual void sort();
 	virtual void postSorting();
 	virtual void MemFree();

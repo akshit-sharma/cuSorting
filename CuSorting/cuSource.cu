@@ -5,6 +5,7 @@
 #include "GPU_Sorting_Functions.cuh"
 
 void CuSource::sort() {
+	unsigned int num_blocks;
 	switch (column_decide % 3)
 	{
 	case 0:
@@ -23,8 +24,14 @@ void CuSource::sort() {
 			cudaDeviceSynchronize();
 			break;
 		case 2:
-			odd_even_sort_scheme_paperid<<<NUM_BLOCK,WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+			for (unsigned int i = 0; i < rows; i++) {
+				odd_even_sort_scheme_paperid<<<num_blocks, WID_BLOCK>>>(d_paperIdWrapper, rows);
+				gpuErrchk( cudaPeekAtLastError() );
+				gpuErrchk( cudaDeviceSynchronize() );
+			}
+			checkArray << <static_cast<int>(rows / WID_BLOCK) + 1, WID_BLOCK >> > (d_paperIdWrapper, rows);
 			break;
 		default:
 			break;
@@ -40,6 +47,36 @@ void CuSource::MemAllo(const char* file_name)
 {
 	Source::MemAllo(file_name);
 
+	switch (column_decide % 3)
+	{
+	case 0:
+		// NOT READY
+		//	cudaMalloc((void **)d_institution_name, rows * sizeof(char));
+		// TODO: fig. out a way for string to gpu
+		//	h_institution_name = new char[length_institution_name + 1];
+		// TODO: cudaMemcpy
+		break;
+	case 1:
+		paperIdWrapper = (struct PaperIdWrapper_Scheme *) malloc(rows * sizeof(struct PaperIdWrapper_Scheme));
+		gpuErrchk(
+			cudaMalloc((void **)&d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper_Scheme))
+		);
+		break;
+	case 2:
+		// NOT READY
+		//	cudaMalloc((void **)d_subject_name, rows * sizeof(char));
+		// TODO: fig. out a way for string to gpu
+		//	h_subject_name = new char[length_subject_name + 1];
+		// TODO: cudaMemcpy
+		break;
+	}
+
+
+}
+
+void CuSource::preSorting()
+{
+	Source::preSorting();
 	//cudaMalloc((void **) d_schemeDataStructure, rows * sizeof(SchemeDataStructure));
 
 	switch (column_decide % 3)
@@ -52,16 +89,19 @@ void CuSource::MemAllo(const char* file_name)
 		// TODO: cudaMemcpy
 		break;
 	case 1:
-		paperIdWrapper = (struct PaperIdWrapper_Scheme *) malloc(rows * sizeof(struct PaperIdWrapper_Scheme));
 		for (size_t i = 0; i < rows; i++) {
 			paperIdWrapper[i].paper_id = paper_id[i];
 			paperIdWrapper[i].classPtr = &schemeDataStructure[i];
+
+		//	printf_stream(stderr, "class add not same \n %p is before %p \n\n",
+		//		&schemeDataStructure[i], paperIdWrapper[i].classPtr);
 		}
-		cudaMalloc((void **)d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper_Scheme));
+		gpuErrchk(
 		cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
 			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyHostToDevice
-		);
+		)
+			);
 		break;
 	case 2:
 		// NOT READY
@@ -86,7 +126,9 @@ void CuSource::MemFree()
 		//	delete[](h_institution_name);
 		break;
 	case 1:
-		cudaFree(d_paperIdWrapper);
+		gpuErrchk(
+		cudaFree(d_paperIdWrapper)
+		);
 		free(paperIdWrapper);
 		break;
 	case 2:
@@ -110,13 +152,30 @@ void CuSource::postSorting()
 		//	delete[](h_institution_name);
 		break;
 	case 1:
+		gpuErrchk(
 		cudaMemcpy(paperIdWrapper, d_paperIdWrapper,
 			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyDeviceToHost
-		);
+		));
+		int paper_id_old;
+		int paper_id_new;
+		int wrongCount;
+		paper_id_old = INT_MIN;
+		wrongCount = 0;
 		for (size_t i = 0; i < rows; i++) {
-			schemeDataStructure[i] = *paperIdWrapper[i].classPtr;
+			paper_id_new = paperIdWrapper[i].paper_id;
+			if (paper_id_new < paper_id_old) {
+				printf_stream(stderr, "Array not sorted \n %d is before %d \n\n",
+					paper_id_old, paper_id_new);
+				}
+			schemeDataStructure[i].setValue(paperIdWrapper[i].classPtr);
+			if (paper_id_new != schemeDataStructure[i].getPaperId()) {
+			//	printf_stream(stderr, "class add not same \n %p is before %p \n\n",
+			//		&schemeDataStructure[i], paperIdWrapper[i].classPtr);
+				wrongCount++;
+			}
 		}
+		printf_stream(stdout, "Wrongly sorted elements %d \n", wrongCount);
 		break;
 	case 2:
 		//	cudaFree(d_subject_name);

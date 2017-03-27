@@ -13,6 +13,8 @@
 #include "cuSource.h"
 #include "cuBiggerSource.h"
 
+#include "GPU_Sorting_Functions.cuh"
+
 Source source;
 BiggerSource bigsource;
 
@@ -142,17 +144,17 @@ int main(int argc, char ** argv)
 	sort_small = &f1;
 	sort_big = &f2;
 
-	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu);
-	both_call_runsort_skip("quicksort", 4, "subjName", 5, "name", skip_quick_cpu);
-	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu);
+	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
+	both_call_runsort_skip("quicksort", 4, "subjName", 5, "name", skip_quick_cpu, skip_quick_gpu);
+	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	
-	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu);
-	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu);
-	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu);
+	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu, skip_shell_gpu);
+	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
 	
-	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu);
-	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu);
-	both_call_runsort_skip("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu);
+	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
+//	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu, skip_bubble_gpu);
+//	both_call_runsort_skip("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
 	
 	printf_stream(stdout, "\n");
 
@@ -196,27 +198,32 @@ bool detectCudaEnabledGPU()
 		
 		int dev = 0, driverVersion = 0, runtimeVersion = 0;
 
-		cudaSetDevice(dev);
+		gpuErrchk(
+		cudaSetDevice(dev));
 		cudaDeviceProp deviceProp;
-		cudaGetDeviceProperties(&deviceProp, dev);
+		gpuErrchk(
+		cudaGetDeviceProperties(&deviceProp, dev));
 
 		printf("\nDevice %d: \"%s\"\n", dev, deviceProp.name);
 
 		// Console log
-		cudaDriverGetVersion(&driverVersion);
-		cudaRuntimeGetVersion(&runtimeVersion);
+		gpuErrchk(
+		cudaDriverGetVersion(&driverVersion));
+		gpuErrchk(
+		cudaRuntimeGetVersion(&runtimeVersion));
 		printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
 		printf("  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
 
 		printf("\n\n");
 
-		return true;
 	}
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// End of deviceQuery Example
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	return true;
 
 }
 
