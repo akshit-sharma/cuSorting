@@ -435,13 +435,11 @@ void BiggerSource::shellsort(std::string * toSort, size_t low, size_t high)
 	size_t i, j;
 	long long k;
 
-	size_t i_foot, j_foot, k_foot;
-
-	i_foot = j_foot = k_foot = 0;
-
+	high++;
 	for (i = (high + 1) / 2; i>0; i = i / 2)
 		for (j = i; j < high; j++) {
-			for (k = j - i; k >= 0; k = k - i)
+			for (k = j - i; k >= 0 &&
+				compare_isMore(toSort[k], toSort[k + i]); k = k - i)
 			{
 				if (compare_isLess(toSort[k], toSort[k + i]))
 					break;
@@ -457,9 +455,11 @@ void BiggerSource::shellsort(long long * toSort, size_t low, size_t high)
 	size_t i, j;
 	long long k;
 
+	high++;
 	for (i = (high + 1) / 2; i>0; i = i / 2)
 		for (j = i; j<high; j++)
-			for (k = j - i; k >= 0; k = k - i)
+			for (k = j - i; k >= 0 &&
+				toSort[k] > toSort[k + i]; k = k - i)
 			{
 				if (toSort[k] < toSort[k + i])
 					break;
@@ -474,9 +474,11 @@ void BiggerSource::shellsort(int * toSort, size_t low, size_t high)
 	size_t i, j;
 	long long k;
 	
+	high++;
 	for (i = (high + 1) / 2; i>0; i = i / 2)
 		for (j = i; j<high; j++)
-			for (k = j - i; k >= 0; k = k - i)
+			for (k = j - i; k >= 0 &&
+				toSort[k] > toSort[k + i]; k = k - i)
 			{
 				if (toSort[k] < toSort[k + i])
 					break;

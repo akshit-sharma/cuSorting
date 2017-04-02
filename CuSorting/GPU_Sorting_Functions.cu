@@ -35,8 +35,8 @@ __global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWr
 		{
 			temp.paper_id = d_PaperIdWrapper[arrayIndex].paper_id;
 			temp.classPtr = d_PaperIdWrapper[arrayIndex].classPtr;
-			d_PaperIdWrapper[arrayIndex].paper_id = d_PaperIdWrapper[arrayIndex+1].paper_id;
-			d_PaperIdWrapper[arrayIndex].classPtr = d_PaperIdWrapper[arrayIndex+1].classPtr;
+			d_PaperIdWrapper[arrayIndex].paper_id = d_PaperIdWrapper[arrayIndex + 1].paper_id;
+			d_PaperIdWrapper[arrayIndex].classPtr = d_PaperIdWrapper[arrayIndex + 1].classPtr;
 			d_PaperIdWrapper[arrayIndex + 1].paper_id = temp.paper_id;
 			d_PaperIdWrapper[arrayIndex + 1].classPtr = temp.classPtr;
 		}

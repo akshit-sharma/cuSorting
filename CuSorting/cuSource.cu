@@ -174,6 +174,7 @@ void CuSource::postSorting()
 			//		&schemeDataStructure[i], paperIdWrapper[i].classPtr);
 				wrongCount++;
 			}
+			paper_id_old = paper_id_new;
 		}
 		printf_stream(stdout, "Wrongly sorted elements %d \n", wrongCount);
 		break;
