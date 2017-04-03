@@ -24,6 +24,7 @@
     <ClInclude Include="cuRDStruct.h" />
     <ClInclude Include="cuSource.h" />
     <ClInclude Include="cuSDStruct.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="GlobalHeader.h" />
     <ClInclude Include="GPU_Sorting_Functions.cuh" />
     <ClInclude Include="Main.h" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="GlobalHeader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ResultsDataStructure.cpp" />

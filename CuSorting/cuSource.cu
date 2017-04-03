@@ -1,11 +1,14 @@
 
 #include "cuSource.h"
 #include <cuda_runtime.h>
+#include "Debugger.h"
 
 #include "GPU_Sorting_Functions.cuh"
 
 void CuSource::sort() {
+
 	unsigned int num_blocks;
+	
 	switch (column_decide % 3)
 	{
 	case 0:
@@ -31,7 +34,7 @@ void CuSource::sort() {
 				gpuErrchk( cudaPeekAtLastError() );
 				gpuErrchk( cudaDeviceSynchronize() );
 			}
-			checkArray << <static_cast<int>(rows / WID_BLOCK) + 1, WID_BLOCK >> > (d_paperIdWrapper, rows);
+			checkArray<<<static_cast<int>(rows / WID_BLOCK) + 1, WID_BLOCK >>>(d_paperIdWrapper, rows);
 			break;
 		default:
 			break;
@@ -96,6 +99,7 @@ void CuSource::preSorting()
 		//	printf_stream(stderr, "class add not same \n %p is before %p \n\n",
 		//		&schemeDataStructure[i], paperIdWrapper[i].classPtr);
 		}
+// 		copy_data(paperIdWrapper, rows);
 		gpuErrchk(
 		cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
 			rows * sizeof(struct PaperIdWrapper_Scheme),
@@ -157,6 +161,8 @@ void CuSource::postSorting()
 			rows * sizeof(struct PaperIdWrapper_Scheme),
 			cudaMemcpyDeviceToHost
 		));
+//		check_data(paperIdWrapper);
+//		remove_data();
 		int paper_id_old;
 		int paper_id_new;
 		int wrongCount;

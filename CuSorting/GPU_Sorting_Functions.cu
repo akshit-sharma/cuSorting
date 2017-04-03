@@ -40,6 +40,7 @@ __global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWr
 			d_PaperIdWrapper[arrayIndex + 1].paper_id = temp.paper_id;
 			d_PaperIdWrapper[arrayIndex + 1].classPtr = temp.classPtr;
 		}
+		__syncthreads();
 		arrayIndex += 1;
 		if (arrayIndex+1 < maxLimit) {
 			if (d_PaperIdWrapper[arrayIndex].paper_id > d_PaperIdWrapper[arrayIndex + 1].paper_id)
@@ -52,6 +53,7 @@ __global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWr
 				d_PaperIdWrapper[arrayIndex + 1].classPtr = temp.classPtr;
 			}
 		}
+		__syncthreads();
 	}
 
 }
