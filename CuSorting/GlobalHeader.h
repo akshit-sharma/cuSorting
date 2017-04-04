@@ -21,6 +21,12 @@
 
 #endif
 
+#ifdef __INTELLISENSE__
+#define __launch_bounds__(a,b)
+void __syncthreads(void);
+void __threadfence(void);
+#endif
+
 extern const bool skip_quick_cpu;
 extern const bool skip_shell_cpu;
 extern const bool skip_bubble_cpu;

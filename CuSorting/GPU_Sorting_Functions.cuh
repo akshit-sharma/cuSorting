@@ -18,6 +18,7 @@ __global__ void checkArray(PaperIdWrapper_Scheme * d_PaperIdWrapper_Scheme, size
 
 __global__ void odd_even_sort_scheme_instiname(InstitutionNameWrapper_Scheme * d_institutionNameWrapper_Scheme);
 __global__ void odd_even_sort_scheme_subjname(SubjectNameWrapper_Scheme * d_subjectNameWrapper_Scheme);
+__global__ void odd_even_sort_scheme_paperid_swap_edges_only(PaperIdWrapper_Scheme * d_PaperIdWrapper, size_t maxLimit);
 __global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWrapper_Scheme, size_t maxLimit);
 __global__ void odd_even_sort_results_paperid(PaperIdWrapper_Results * d_PaperIdWrapper_Results);
 __global__ void odd_even_sort_results_rollnumber(RollNumberWrapper_Results * d_results_rollnumberWrapper_Results);

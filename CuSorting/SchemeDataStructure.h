@@ -49,6 +49,30 @@ class SchemeDataStructure
 
 	SchemeDS(;);
 
+	bool originalValue;
+
+	int orig_scheme_prog_code;									
+	std::string orig_prog_name;
+	long long orig_scheme_id;
+	std::string orig_prog_sem_year;
+	std::string orig_prepared_date;
+	std::string orig_declared_date;
+	int orig_institution_code;
+	std::string orig_institution_name;		/* for sorting */
+	int orig_s_number;
+	int orig_paper_id;						/* for sorting */
+	std::string orig_paper_code;
+	std::string orig_subject_name;			/* for sorting */
+	int orig_credits;
+	std::string orig_type;
+	std::string orig_exam;
+	std::string orig_mode;
+	std::string orig_kind;
+	std::string orig_minor;
+	std::string orig_major;
+	std::string orig_max_marks;
+	std::string orig_pass_marks;
+
 public:
     static const size_t MAX_SIZE = 262023;
 
@@ -59,7 +83,7 @@ public:
 	decltype(paper_id) getPaperId();
 
 	void setValue(SchemeDataStructure * schemeDataStructure);
-
+	SchemeDataStructure getOriginalValue();
 	void getValue(struct SchemeDSHolder * schemeDSHolder);
 
 };

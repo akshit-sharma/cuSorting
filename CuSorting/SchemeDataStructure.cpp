@@ -31,6 +31,28 @@ void SchemeDataStructure::modifySDS(
     this->max_marks = std::string(max_marks);
     this->pass_marks = std::string(pass_marks);
 
+	this->orig_scheme_prog_code = this->scheme_prog_code;
+	this->orig_prog_name = this->prog_name;
+	this->orig_scheme_id = this->scheme_id;
+	this->orig_prog_sem_year = this->prog_sem_year;
+	this->orig_prepared_date = this->prepared_date;
+	this->orig_declared_date = this->declared_date;
+	this->orig_institution_code = this->institution_code;
+	this->orig_institution_name = this->institution_name;
+	this->orig_s_number = this->s_number;
+	this->orig_paper_id = this->paper_id;
+	this->orig_paper_code = this->paper_code;
+	this->orig_subject_name = this->subject_name;
+	this->orig_credits = this->credits;
+	this->orig_type = this->type;
+	this->orig_exam = this->exam;
+	this->orig_mode = this->mode;
+	this->orig_kind = this->kind;
+	this->orig_minor = this->minor;
+	this->orig_major = this->major;
+	this->orig_max_marks = this->max_marks;
+	this->orig_pass_marks = this->pass_marks;
+
 }
 
 void SchemeDataStructure::getValue(struct SchemeDSHolder * schemeDSHolder)
@@ -59,6 +81,38 @@ void SchemeDataStructure::getValue(struct SchemeDSHolder * schemeDSHolder)
     schemeDSHolder->pass_marks = this->pass_marks;
 
 }
+
+SchemeDataStructure SchemeDataStructure::getOriginalValue()
+{
+
+	SchemeDataStructure returnSchemeDataStructure;
+
+	returnSchemeDataStructure.scheme_prog_code = this->orig_scheme_prog_code;
+	returnSchemeDataStructure.prog_name = this->orig_prog_name;
+	returnSchemeDataStructure.scheme_id = this->orig_scheme_id;
+	returnSchemeDataStructure.prog_sem_year = this->orig_prog_sem_year;
+	returnSchemeDataStructure.prepared_date = this->orig_prepared_date;
+	returnSchemeDataStructure.declared_date = this->orig_declared_date;
+	returnSchemeDataStructure.institution_code = this->orig_institution_code;
+	returnSchemeDataStructure.institution_name = this->orig_institution_name;
+	returnSchemeDataStructure.s_number = this->orig_s_number;
+	returnSchemeDataStructure.paper_id = this->orig_paper_id;
+	returnSchemeDataStructure.paper_code = this->orig_paper_code;
+	returnSchemeDataStructure.subject_name = this->orig_subject_name;
+	returnSchemeDataStructure.credits = this->orig_credits;
+	returnSchemeDataStructure.type = this->orig_type;
+	returnSchemeDataStructure.exam = this->orig_exam;
+	returnSchemeDataStructure.mode = this->orig_mode;
+	returnSchemeDataStructure.kind = this->orig_kind;
+	returnSchemeDataStructure.minor = this->orig_minor;
+	returnSchemeDataStructure.major = this->orig_major;
+	returnSchemeDataStructure.max_marks = this->orig_max_marks;
+	returnSchemeDataStructure.pass_marks = this->orig_pass_marks;
+
+	return returnSchemeDataStructure;
+
+}
+
 
 void SchemeDataStructure::setValue(SchemeDataStructure * schemeDataStructure)
 {

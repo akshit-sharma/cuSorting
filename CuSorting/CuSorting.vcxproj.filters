@@ -73,10 +73,10 @@
     <CudaCompile Include="GPU_Sorting_Functions.cu">
       <Filter>Source</Filter>
     </CudaCompile>
-    <CudaCompile Include="cuSource.cu">
+    <CudaCompile Include="cuBiggerSource.cu">
       <Filter>Source</Filter>
     </CudaCompile>
-    <CudaCompile Include="cuBiggerSource.cu">
+    <CudaCompile Include="cuSource.cu">
       <Filter>Source</Filter>
     </CudaCompile>
   </ItemGroup>
