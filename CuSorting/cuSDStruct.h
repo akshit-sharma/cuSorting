@@ -16,7 +16,7 @@ struct SubjectNameWrapper_Scheme
 
 struct PaperIdWrapper_Scheme
 {
-	int padding;
 	int paper_id;
 	SchemeDataStructure * classPtr;
 };
+

@@ -80,8 +80,8 @@ void runSort(main_class * source_obj, int value, double * timeTaken)
 	if (!skip_check_output)
 		computationCheckAnswer = source_obj->checkComputation();
 	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
-
-	if(!computationCheckAnswer)
+	
+//	if(!computationCheckAnswer)
 		source_obj->print_table(output_file_name);
 
 	start = std::clock();

@@ -14,12 +14,24 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 	}
 }
 
+#define SWAP_FOR_GPU_SPEC(main, subvar, temp, index_1, index_2)		\
+	temp = main[index_1].subvar;									\
+	main[index_1].subvar = main[index_2].subvar;					\
+	main[index_2].subvar = temp;
+
+#define SWAP_FOR_GPU(main, temp, index_1, index_2)			\
+	temp = main[index_1];									\
+	main[index_1] = main[index_2];							\
+	main[index_2] = temp;
+
+
 __global__ void checkArray(PaperIdWrapper_Scheme * d_PaperIdWrapper_Scheme, size_t maxLimit);
 
 __global__ void odd_even_sort_scheme_instiname(InstitutionNameWrapper_Scheme * d_institutionNameWrapper_Scheme);
 __global__ void odd_even_sort_scheme_subjname(SubjectNameWrapper_Scheme * d_subjectNameWrapper_Scheme);
 __global__ void odd_even_sort_scheme_paperid_swap_edges_only(PaperIdWrapper_Scheme * d_PaperIdWrapper, size_t maxLimit);
-__global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWrapper_Scheme, size_t maxLimit);
+__global__ void odd_even_sort_scheme_paperid(PaperIdWrapper_Scheme * d_PaperIdWrapper_Scheme, size_t maxLimit, int offset);
+__global__ void odd_even_sort_scheme_paperid_separate(int * d_paper_id, SchemeDataStructure ** d_classPtr, size_t maxLimit, int offset);
 __global__ void odd_even_sort_results_paperid(PaperIdWrapper_Results * d_PaperIdWrapper_Results);
 __global__ void odd_even_sort_results_rollnumber(RollNumberWrapper_Results * d_results_rollnumberWrapper_Results);
 __global__ void odd_even_sort_results_name(NameWrapper_Results * d_nameWrapper_Results);

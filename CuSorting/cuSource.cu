@@ -31,9 +31,12 @@ void CuSource::sort() {
 			num_blocks = (num_blocks / 2) + 1;
 			//print_debug_specific
 			for (unsigned int i = 0; i < rows; i++) {
-				odd_even_sort_scheme_paperid<<<num_blocks, WID_BLOCK>>>(d_paperIdWrapper, rows);
+				odd_even_sort_scheme_paperid_separate<<<num_blocks, WID_BLOCK>>>(d_paper_id, d_classPtr, rows, 0);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
+//				odd_even_sort_scheme_paperid<<<num_blocks, WID_BLOCK>>>(d_paperIdWrapper, rows, WID_BLOCK/2);
+//				gpuErrchk(cudaPeekAtLastError());
+//				gpuErrchk(cudaDeviceSynchronize());
 			}
 			//checkArray<<<static_cast<int>(rows / WID_BLOCK) + 1, WID_BLOCK>>>(d_paperIdWrapper, rows);
 			break;
@@ -62,8 +65,16 @@ void CuSource::MemAllo(const char* file_name)
 		break;
 	case 1:
 		paperIdWrapper = (struct PaperIdWrapper_Scheme *) malloc(rows * sizeof(struct PaperIdWrapper_Scheme));
+		h_paper_id = (TYPE_PAPER_ID *)malloc(rows * sizeof(TYPE_PAPER_ID));
+		h_classPtr = (TYPE_CLASSPTR *)malloc(rows * sizeof(TYPE_CLASSPTR));
 		gpuErrchk(
 			cudaMalloc((void **)&d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper_Scheme))
+		);
+		gpuErrchk(
+			cudaMalloc((void **)&d_paper_id, rows * sizeof(TYPE_PAPER_ID))
+		);
+		gpuErrchk(
+			cudaMalloc((void **)&d_classPtr, rows * sizeof(TYPE_CLASSPTR))
 		);
 		break;
 	case 2:
@@ -97,6 +108,8 @@ void CuSource::preSorting()
 			paperIdWrapper[i].paper_id = paper_id[i];
 			paperIdWrapper[i].classPtr = &schemeDataStructure[i];
 
+			h_paper_id[i] = paper_id[i];
+			h_classPtr[i] = &schemeDataStructure[i];
 			//	printf_stream(stderr, "class add not same \n %p is before %p \n\n",
 			//		&schemeDataStructure[i], paperIdWrapper[i].classPtr);
 		}
@@ -104,6 +117,18 @@ void CuSource::preSorting()
 		gpuErrchk(
 			cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
 				rows * sizeof(struct PaperIdWrapper_Scheme),
+				cudaMemcpyHostToDevice
+			)
+		);
+		gpuErrchk(
+			cudaMemcpy(d_paper_id, h_paper_id,
+				rows * sizeof(TYPE_PAPER_ID),
+				cudaMemcpyHostToDevice
+			)
+		);
+		gpuErrchk(
+			cudaMemcpy(d_classPtr, h_classPtr,
+				rows * sizeof(TYPE_CLASSPTR),
 				cudaMemcpyHostToDevice
 			)
 		);
@@ -134,6 +159,12 @@ void CuSource::MemFree()
 		gpuErrchk(
 			cudaFree(d_paperIdWrapper)
 		);
+		gpuErrchk(
+			cudaFree(d_paper_id)
+		);
+		gpuErrchk(
+			cudaFree(d_classPtr)
+		);
 		free(paperIdWrapper);
 		break;
 	case 2:
@@ -162,6 +193,18 @@ void CuSource::postSorting()
 				rows * sizeof(struct PaperIdWrapper_Scheme),
 				cudaMemcpyDeviceToHost
 			));
+		gpuErrchk(
+			cudaMemcpy(h_paper_id, d_paper_id,
+				rows * sizeof(TYPE_PAPER_ID),
+				cudaMemcpyDeviceToHost
+			)
+		);
+		gpuErrchk(
+			cudaMemcpy(h_classPtr, d_classPtr,
+				rows * sizeof(TYPE_CLASSPTR),
+				cudaMemcpyDeviceToHost
+			)
+		);
 		//print_debug_specific
 		//check_data(paperIdWrapper);
 		//remove_data();
@@ -173,6 +216,7 @@ void CuSource::postSorting()
 		paper_id_old = INT_MIN;
 		wrongCount = 0;
 		wrongCombination = 0;
+		/*
 		for (size_t i = 0; i < rows; i++) {
 			paper_id_new = paperIdWrapper[i].paper_id;
 			if (paper_id_new < paper_id_old) {
@@ -181,6 +225,23 @@ void CuSource::postSorting()
 			tempSchemeDataStructure = paperIdWrapper[i].classPtr;
 			if (paper_id_new != tempSchemeDataStructure->getPaperId()) {
 //				printf("%d %d not same", paper_id_new, tempSchemeDataStructure->getPaperId());
+			}
+			auto originalValue = tempSchemeDataStructure->getOriginalValue();
+			schemeDataStructure[i].setValue(&originalValue);
+			if (paper_id_new != schemeDataStructure[i].getPaperId()) {
+				wrongCombination++;
+			}
+			paper_id_old = paper_id_new;
+		}
+		*/
+		for (size_t i = 0; i < rows; i++) {
+			paper_id_new = h_paper_id[i];
+			if (paper_id_new < paper_id_old) {
+				wrongCount++;
+			}
+			tempSchemeDataStructure = h_classPtr[i];
+			if (paper_id_new != tempSchemeDataStructure->getPaperId()) {
+				//				printf("%d %d not same", paper_id_new, tempSchemeDataStructure->getPaperId());
 			}
 			auto originalValue = tempSchemeDataStructure->getOriginalValue();
 			schemeDataStructure[i].setValue(&originalValue);
