@@ -6,14 +6,6 @@
 
 #include <string>
 
-
-#define SWAP(type, var_1, var_2, data_member)        \
-	type = data_member[var_1];	                     \
-	data_member[var_1] = data_member[var_2];	     \
-	data_member[var_2] = type;
-
-#define COMMA ,
-
 #define SchemeDS(delimiter)									\
 	int scheme_prog_code delimiter									\
 	std::string prog_name delimiter									\
@@ -36,6 +28,8 @@
 	std::string major delimiter										\
 	std::string max_marks delimiter									\
 	std::string pass_marks
+
+#define COMMA ,
 
 
 struct SchemeDSHolder{

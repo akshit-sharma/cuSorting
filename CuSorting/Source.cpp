@@ -107,11 +107,9 @@ void Source::readFile(const char* file_name)
 	int line_number;
 	int category;
 
-    int scheme_prog_code; std::string prog_name; long long scheme_id; std::string prog_sem_year;
-    std::string prepared_date; std::string declared_date; int institution_code;
-    std::string institution_name;	int s_number;	int paper_id;	std::string paper_code;
-    std::string subject_name;	int credits; std::string type; std::string exam; std::string mode;
-    std::string kind;	std::string minor; std::string major; std::string max_marks; std::string pass_marks;
+	int paper_id;
+	std::string subject_name;
+	std::string institution_name;
 
 	bool overpassed_inst = NULL;
 	bool overpassed_subj = NULL;
@@ -148,15 +146,6 @@ void Source::readFile(const char* file_name)
 			{
 				if (*buffer_iter == ',' || *(buffer_iter + 1) == '\0')
 				{
-					if (*buffer_iter == ',')
-						temp_var[index] = '\0';
-					else
-					{
-						temp_var[index++] = *buffer_iter;
-						temp_var[index] = '\0';
-					}
-					headers.push_back(std::string(temp_var));
-					index = 0;
 					continue;
 				}
 			}
@@ -174,68 +163,14 @@ void Source::readFile(const char* file_name)
                     break;
 				switch (category)
 				{
-				case 0:
-					scheme_prog_code = (atoi(temp_var));
-					break;
-				case 1:
-					prog_name = std::string(temp_var);
-					break;
-				case 2:
-					scheme_id = (atoll(temp_var));
-					break;
-				case 3:
-					prog_sem_year = std::string(temp_var);
-					break;
-				case 4:
-					prepared_date = std::string(temp_var);
-					break;
-				case 5:
-					declared_date = std::string(temp_var);
-					break;
-				case 6:
-					institution_code = (atoi(temp_var));
-					break;
 				case 7:
 					institution_name = std::string(temp_var);
-					break;
-				case 8:
-					s_number = (atoi(temp_var));
 					break;
 				case 9:
 					paper_id = (atoi((temp_var)));
 					break;
-				case 10:
-					paper_code = std::string(temp_var);
-					break;
 				case 11:
 					subject_name = std::string(temp_var);
-					break;
-				case 12:
-					credits = (atoi(temp_var));
-					break;
-				case 13:
-					type = std::string(temp_var);
-					break;
-				case 14:
-					exam = std::string(temp_var);
-					break;
-				case 15:
-					mode = std::string(temp_var);
-					break;
-				case 16:
-					kind = std::string(temp_var);
-					break;
-				case 17:
-					minor = std::string(temp_var);
-					break;
-				case 18:
-					major = std::string(temp_var);
-					break;
-				case 19:
-					max_marks = std::string(temp_var);
-					break;
-				case 20:
-					pass_marks = std::string(temp_var);
 					break;
 				default:
 					break;
@@ -306,13 +241,6 @@ void Source::readFile(const char* file_name)
 				}
 			}
 
-            schemeDataStructure[line_number-1].modifySDS(
-                    scheme_prog_code, prog_name, scheme_id, prog_sem_year,
-                    prepared_date, declared_date, institution_code,
-                    institution_name, s_number, paper_id, paper_code,
-                    subject_name, credits, type, exam, mode,
-                    kind, minor, major, max_marks, pass_marks
-            );
         }
 
 		line_number++;
@@ -381,33 +309,10 @@ void Source::print_table(const char* file_name)
 
 	fopen_stream(&p_file, file_name, "w");
 	fopen_stream(&single_col_file, sorted_file_name.c_str(), "w");
-
-	std::vector<std::string>::iterator iter;
-	for (iter = headers.begin();
-	     iter != headers.end(); ++iter)
-	{
-		if (iter != headers.begin())
-		printf_stream(p_file, ",");
-		printf_stream(p_file,"%s",(*iter).c_str());
-	}
-
-	printf_stream(p_file,"\n");
-
-    struct SchemeDSHolder schemeDSHolder;
-
+	
 	for (size_t i = 0; i < rows; i++)
 	{
-
-        schemeDataStructure[i].getValue(&schemeDSHolder);
-
-		printf_stream(p_file, "%d,%s,%lld,%s,%s,%s,%d,%s,%d,%d,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s\n",
-            schemeDSHolder.scheme_prog_code, schemeDSHolder.prog_name.c_str(), schemeDSHolder.scheme_id, schemeDSHolder.prog_sem_year.c_str(),
-            schemeDSHolder.prepared_date.c_str(), schemeDSHolder.declared_date.c_str(), schemeDSHolder.institution_code, schemeDSHolder.institution_name.c_str(),
-            schemeDSHolder.s_number, schemeDSHolder.paper_id, schemeDSHolder.paper_code.c_str(), schemeDSHolder.subject_name.c_str(), schemeDSHolder.credits,
-            schemeDSHolder.type.c_str(), schemeDSHolder.exam.c_str(), schemeDSHolder.mode.c_str(), schemeDSHolder.kind.c_str(),
-            schemeDSHolder.minor.c_str(), schemeDSHolder.major.c_str(), schemeDSHolder.max_marks.c_str(), schemeDSHolder.pass_marks.c_str())
-		;
-
+		
 		switch (sorted_col_type)
 		{
 		case inte:
@@ -435,14 +340,10 @@ void Source::MemAllo(const char* file_name)
 	size_t colmns = 21;
 	rows = getFileLines(file_name);
 
-	headers.reserve(colmns);
-
 	paper_id = new int[rows];
 	institution_name = new std::string[rows];
 	subject_name = new std::string[rows];
-
-    schemeDataStructure = new SchemeDataStructure[rows];
-
+	
 	length_institution_name = 0;
 	length_subject_name = 0;
 
@@ -455,13 +356,10 @@ void Source::MemAllo(const char* file_name)
 
 void Source::MemFree()
 {
-	headers.clear();
 
 	delete [] (institution_name);
 	delete [] (paper_id);
 	delete [] (subject_name);
-
-    delete [] (schemeDataStructure);
 
 }
 
@@ -688,9 +586,7 @@ void Source::swap(const size_t index_1, const size_t index_2)
 		SWAP(t_string, index_1, index_2, subject_name);
 		break;
 	}
-
-    SWAP(t_schemeDataStructure, index_1, index_2, schemeDataStructure);
-
+	
 }
 
 bool Source::compare_isLess(std::string str1, std::string str2)
@@ -750,8 +646,6 @@ bool Source::compare_isMore(std::string str1, std::string str2)
 
 bool Source::checkComputation()
 {
-	struct SchemeDSHolder schemeDSHolder;
-
 	int paper_id_old, paper_id_new;
 	std::string subject_name_old, subject_name_new;
 	std::string institution_name_old, institution_name_new;
@@ -761,24 +655,23 @@ bool Source::checkComputation()
 	institution_name_old = "";
 
 	for (size_t i = 0; i < rows; i++) {
-		schemeDataStructure[i].getValue(&schemeDSHolder);
 
 		switch (column_decide % 3)
 		{
 		case 0:
-			institution_name_new = schemeDSHolder.institution_name;
+			institution_name_new = institution_name[i];
 			if (compare_isMore(institution_name_old, institution_name_new))
 				return false;
 			institution_name_old = institution_name_new;
 			break;
 		case 1:
-			paper_id_new = schemeDSHolder.paper_id;
+			paper_id_new = paper_id[i];
 			if (paper_id_old > paper_id_new)
 				return false;
 			paper_id_old = paper_id_new;
 			break;
 		case 2:
-			subject_name_new = schemeDSHolder.subject_name;
+			subject_name_new = subject_name[i];
 			if (compare_isMore(subject_name_old, subject_name_new))
 				return false;
 			subject_name_old = subject_name_new;

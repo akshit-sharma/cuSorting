@@ -16,15 +16,15 @@ void CuBiggerSource::sort() {
 		switch ((column_decide-1) / 3)
 		{
 		case 0:
-			quicksort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
+			//quicksort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
 			cudaDeviceSynchronize();
 			break;
 		case 1:
-			shellsort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
+			//shellsort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
 			cudaDeviceSynchronize();
 			break;
 		case 2:
-			odd_even_sort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
+			//odd_even_sort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
 			cudaDeviceSynchronize();
 			break;
 		default:
@@ -40,15 +40,15 @@ void CuBiggerSource::sort() {
 		switch((column_decide-1) / 3)
 		{
 		case 0:
-			quicksort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
+			//quicksort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
 			cudaDeviceSynchronize();
 			break;
 		case 1:
-			shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
+			//shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
 			cudaDeviceSynchronize();
 			break;
 		case 2:
-			odd_even_sort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
+			//odd_even_sort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
 			cudaDeviceSynchronize();
 			break;
 		}

@@ -27,6 +27,12 @@ void __syncthreads(void);
 void __threadfence(void);
 #endif
 
+
+#define SWAP(temp_var, index_1, index_2, array_name)     \
+	temp_var = array_name[index_1];	                     \
+	array_name[index_1] = array_name[index_2];			 \
+	array_name[index_2] = temp_var;
+
 extern const bool skip_quick_cpu;
 extern const bool skip_shell_cpu;
 extern const bool skip_bubble_cpu;
