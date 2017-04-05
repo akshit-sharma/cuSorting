@@ -8,55 +8,64 @@
 #define WID_BLOCK 1024
 
 void CuBiggerSource::sort() {
+
+	unsigned int num_blocks;
+
 	switch (column_decide % 3)
 	{
 	case 0:
+		//call sorting kernel with
+		//d_rollNumberWrapper
+		switch ((column_decide - 1) / 3)
+		{
+		case 0:
+			//quicksort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
+			//cudaDeviceSynchronize();
+			break;
+		case 1:
+			//shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
+			//cudaDeviceSynchronize();
+			break;
+		case 2:
+			odd_even_sort_llong << <NUM_BLOCK, WID_BLOCK >> >(d_llong, rows);
+			cudaDeviceSynchronize();
+			break;
+		}
+		break;
+	case 1:
 		//call sorting kernel with
 		//d_paperIdWrapper
 		switch ((column_decide-1) / 3)
 		{
 		case 0:
 			//quicksort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			//cudaDeviceSynchronize();
 			break;
 		case 1:
 			//shellsort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			//cudaDeviceSynchronize();
 			break;
 		case 2:
-			//odd_even_sort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+			for (unsigned int i = 0; i < rows; i++) {
+				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
+				gpuErrchk(cudaPeekAtLastError());
+				gpuErrchk(cudaDeviceSynchronize());
+			}
 			break;
 		default:
 			break;
 		}
 		break;
-	case 1:
-
-		break;
 	case 2:
-		//call sorting kernel with
-		//d_rollNumberWrapper
-		switch((column_decide-1) / 3)
-		{
-		case 0:
-			//quicksort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
-			cudaDeviceSynchronize();
-			break;
-		case 1:
-			//shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
-			cudaDeviceSynchronize();
-			break;
-		case 2:
-			//odd_even_sort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
-			cudaDeviceSynchronize();
-			break;
-		}
+
 		break;
 	default:
 		break;
 	}
 }
+
 
 void CuBiggerSource::MemAllo(const char* file_name)
 {
@@ -65,33 +74,49 @@ void CuBiggerSource::MemAllo(const char* file_name)
 	switch (column_decide % 3)
 	{
 	case 0:
-		paperIdWrapper = (struct PaperIdWrapper_Results *) malloc(rows * sizeof(struct PaperIdWrapper_Results));
-		for (size_t i = 0; i < rows; i++) {
-			paperIdWrapper[i].paper_id = paper_id[i];
-			paperIdWrapper[i].classPtr = &resultsDataStructure[i];
-		}
-		cudaMalloc((void **)d_paperIdWrapper, rows * sizeof(struct PaperIdWrapper_Results));
-		cudaMemcpy(d_paperIdWrapper, paperIdWrapper,
-			rows * sizeof(struct PaperIdWrapper_Results),
+		gpuErrchk(
+			cudaMalloc((void **)&d_llong, rows * sizeof(long long))
+		);
+		break;
+	case 1:
+		gpuErrchk(
+			cudaMalloc((void **)&d_int, rows * sizeof(int))
+		);
+		break;
+	case 2:
+		// NOT READY
+		//	cudaMalloc((void **)name, rows * sizeof(char));
+		// TODO: fig. out a way for string to gpu
+		//	h_subject_name = new char[length_subject_name + 1];
+		// TODO: cudaMemcpy
+		break;
+	}
+
+
+}
+
+
+void CuBiggerSource::preSorting()
+{
+	BiggerSource::preSorting();
+
+	switch (column_decide % 3)
+	{
+	case 0:
+		cudaMemcpy(d_llong, rollnumber,
+			rows * sizeof(long long),
 			cudaMemcpyHostToDevice
 		);
 		break;
 	case 1:
-		// TODO: 
-		break;
-	case 2:
-		rollNumberWrapper = (struct RollNumberWrapper_Results *) malloc(rows * sizeof(struct RollNumberWrapper_Results));
-		for (size_t i = 0; i < rows; i++) {
-			rollNumberWrapper[i].rollnumber = rollnumber[i];
-			rollNumberWrapper[i].classPtr = &resultsDataStructure[i];
-		}
-		cudaMalloc((void **)d_rollNumberWrapper, rows * sizeof(struct PaperIdWrapper_Results));
-		cudaMemcpy(d_rollNumberWrapper, rollNumberWrapper,
-			rows * sizeof(struct PaperIdWrapper_Results),
+		cudaMemcpy(d_int, paper_id,
+			rows * sizeof(int),
 			cudaMemcpyHostToDevice
 		);
 		break;
-
+	case 2:
+		// TODO: 
+		break;
 	}
 
 }
@@ -101,19 +126,16 @@ void CuBiggerSource::MemFree() {
 	switch (column_decide % 3)
 	{
 	case 0:
-		cudaFree(d_paperIdWrapper);
-		free(paperIdWrapper);
+		cudaFree(d_llong);
 		break;
 	case 1:
+		cudaFree(d_int);
 		break;
 	case 2:
-		cudaFree(d_rollNumberWrapper);
-		free(rollNumberWrapper);
 		break;
 	default:
 		break;
 	}
-
 
 	BiggerSource::MemFree();
 
@@ -125,31 +147,25 @@ void CuBiggerSource::postSorting()
 	switch (column_decide % 3)
 	{
 	case 0:
-		cudaMemcpy(paperIdWrapper, d_paperIdWrapper,
-			rows * sizeof(struct PaperIdWrapper_Results),
+		cudaMemcpy(rollnumber, d_llong,
+			rows * sizeof(long long),
 			cudaMemcpyDeviceToHost
 		);
-		for (size_t i = 0; i < rows; i++) {
-			resultsDataStructure[i] = *paperIdWrapper[i].classPtr;
-		}
 		break;
 	case 1:
-		// TODO: 
-		break;
-	case 2:
-		cudaMemcpy(rollNumberWrapper, d_rollNumberWrapper,
-			rows * sizeof(struct PaperIdWrapper_Results),
+		cudaMemcpy(paper_id, d_int,
+			rows * sizeof(int),
 			cudaMemcpyDeviceToHost
 		);
-		for (size_t i = 0; i < rows; i++) {
-			resultsDataStructure[i] = *rollNumberWrapper[i].classPtr;
-		}
+		break;
+	case 2:
+		// TODO: 
 		break;
 	}
 
 }
 
-void CuBiggerSource::write_file(const char * file_name, ResultsDataStructure * resultsDataStructure)
+void CuBiggerSource::print_table(const char * file_name)
 {
 	FILE * p_file;
 	std::string sorted_file_name(file_name);
@@ -162,31 +178,20 @@ void CuBiggerSource::write_file(const char * file_name, ResultsDataStructure * r
 
 	fopen_stream(&p_file, sorted_file_name.c_str(), "w");
 
-	std::vector<std::string>::iterator iter;
-	for (iter = headers.begin();
-		iter != headers.end(); ++iter) {
-		if (iter != headers.begin())
-			printf_stream(p_file, ",");
-		printf_stream(p_file, "%s", (*iter).c_str());
-	}
-
-	printf_stream(p_file, "\n");
-
-	struct ResultsDSHolder resultsDSHolder;
-
 	for (size_t i = 0; i < rows; i++) {
 
-		resultsDataStructure[i].getValue(&resultsDSHolder);
-
-		printf_stream(p_file, "%d,%s,%s,%s,%s,%d,%s,%d,%s,%lld,%s,%lld,%lld,%d,%s,%s,%s,%s\n",
-			resultsDSHolder.scheme_prog_code, resultsDSHolder.prepared_date.c_str(),
-			resultsDSHolder.declared_date.c_str(), resultsDSHolder.prog_name.c_str(),
-			resultsDSHolder.prog_sem_year.c_str(), resultsDSHolder.batch,
-			resultsDSHolder.examination.c_str(), resultsDSHolder.institution_code,
-			resultsDSHolder.institution_name.c_str(), resultsDSHolder.rollnumber,
-			resultsDSHolder.name.c_str(), resultsDSHolder.sid, resultsDSHolder.result_scheme_id,
-			resultsDSHolder.paper_id, resultsDSHolder.credits.c_str(), resultsDSHolder.minor.c_str(),
-			resultsDSHolder.major.c_str(), resultsDSHolder.total.c_str());
+		switch ((column_decide-1) % 3)
+		{
+		case 0:
+			printf_stream(p_file, "%lld\n", rollnumber[i]);
+			break;
+		case 1:
+			printf_stream(p_file, "%d\n", paper_id[i]);
+			break;
+		case 2:
+			printf_stream(p_file, "%s\n", name[i].c_str());
+			break;
+		}
 
 	}
 

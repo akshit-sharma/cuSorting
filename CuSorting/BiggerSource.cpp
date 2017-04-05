@@ -109,6 +109,10 @@ void BiggerSource::readFile(const char* file_name)
     size_t line_number;
     int category;
 
+	int paper_id;
+	long long rollnumber;
+	std::string name;
+
 	bool overpassed_name = NULL;
 	
     std::ifstream file(file_name,
@@ -122,8 +126,6 @@ void BiggerSource::readFile(const char* file_name)
     }
 
     line_number = 0;
-
-    ResultDS(;);
 
     while(file.getline(line, 512, '\n')){
         category = 0;
@@ -144,14 +146,6 @@ void BiggerSource::readFile(const char* file_name)
                 {
                     if(*buffer_iter == ',' || *(buffer_iter+1)=='\0')
                     {
-                        if(*buffer_iter == ',')
-                            temp_var[index] = '\0';
-                        else{
-                            temp_var[index++] = *buffer_iter;
-                            temp_var[index] = '\0';
-                        }
-                        headers.push_back(std::string(temp_var));
-                        index = 0;
                         continue;
                     }
                 }
@@ -166,60 +160,15 @@ void BiggerSource::readFile(const char* file_name)
 
                 switch(category)
                     {
-                    case 0: //scheme_prog_code
-                        scheme_prog_code = (atoi(temp_var));
-                        break;
-                    case 1: //prepared_date
-						prepared_date = std::string(temp_var);
-                        break;
-                    case 2: //declared_date
-						declared_date = std::string(temp_var);
-                        break;
-                    case 3: //prog_name
-						prog_name = std::string(temp_var);
-                        break;
-                    case 4: //prog_sem_year
-						prog_sem_year = std::string(temp_var);
-                        break;
-                    case 5: //batch
-                        batch = (atoi(temp_var));
-                        break;
-                    case 6: //examination
-						examination = std::string(temp_var);
-                        break;
-                    case 7: //institution_code
-                        institution_code = (atoi(temp_var));
-                        break;
-                    case 8: //institution_name
-						institution_name = std::string(temp_var);
-                        break;
-                    case 9: //rollnumber
+					case 9: //rollnumber
                         rollnumber = (atoll(temp_var));
                         break;
                     case 10: //name
 						name = std::string(temp_var);
                         break;
-                    case 11: //sid
-                        sid = (atoll(temp_var));
-                        break;
-                    case 12: //result_scheme_id
-                        result_scheme_id = (atoll(temp_var));
-                        break;
 					case 13:
 						paper_id = atoi(temp_var);
 						break;
-                    case 14: //credits
-						credits = std::string(temp_var);
-                        break;
-                    case 15: //minor
-						minor = std::string(temp_var);
-                        break;
-                    case 16: //major
-						major = std::string(temp_var);
-                        break;
-                    case 17: //total
-						total = std::string(temp_var);
-                        break;
                     default:
                         break;
                     }
@@ -244,12 +193,6 @@ void BiggerSource::readFile(const char* file_name)
 
 				if(column_decide%3==2)
 					this->name[line_number-1] = std::string(name);
-
-                resultsDataStructure[line_number-1].modifyRDS(
-                      scheme_prog_code, prepared_date, declared_date, prog_name, prog_sem_year,
-                      batch, examination, institution_code, institution_name, rollnumber,
-                      name, sid, result_scheme_id, paper_id, credits, minor, major, total
-                );
 
 				{
 					if (overpassed_name != NULL && overpassed_name == false)
@@ -325,8 +268,6 @@ bool BiggerSource::readFileToBuffer(std::string filePath,
 
 void BiggerSource::print_table(const char * file_name)
 {
-
-    FILE * p_file;
 	FILE * single_col_file;
 	std::string sorted_file_name(file_name);
 
@@ -336,34 +277,11 @@ void BiggerSource::print_table(const char * file_name)
 	sorted_file_name += std::to_string(init_num);
 	sorted_file_name += ".csv";
 
-	fopen_stream(&p_file, file_name, "w");
 	fopen_stream(&single_col_file, sorted_file_name.c_str(), "w");
-
-    std::vector<std::string>::iterator iter;
-    for(iter = headers.begin();
-        iter != headers.end(); ++iter){
-            if(iter != headers.begin())
-                printf_stream(p_file, ",");
-            printf_stream(p_file,"%s",(*iter).c_str());
-    }
-
-    printf_stream(p_file,"\n");
-
+	
     struct ResultsDSHolder resultsDSHolder;
 
     for(size_t i=0; i < rows; i++){
-
-        resultsDataStructure[i].getValue(&resultsDSHolder);
-
-		printf_stream(p_file, "%d,%s,%s,%s,%s,%d,%s,%d,%s,%lld,%s,%lld,%lld,%d,%s,%s,%s,%s\n",
-			resultsDSHolder.scheme_prog_code, resultsDSHolder.prepared_date.c_str(),
-            resultsDSHolder.declared_date.c_str(), resultsDSHolder.prog_name.c_str(),
-			resultsDSHolder.prog_sem_year.c_str(), resultsDSHolder.batch,
-            resultsDSHolder.examination.c_str(), resultsDSHolder.institution_code,
-            resultsDSHolder.institution_name.c_str(), resultsDSHolder.rollnumber,
-            resultsDSHolder.name.c_str(), resultsDSHolder.sid, resultsDSHolder.result_scheme_id,
-            resultsDSHolder.paper_id, resultsDSHolder.credits.c_str(), resultsDSHolder.minor.c_str(),
-			resultsDSHolder.major.c_str(), resultsDSHolder.total.c_str());
 
 	    switch (sorted_col_type)
 	    {
@@ -380,7 +298,6 @@ void BiggerSource::print_table(const char * file_name)
 
     }
 
-    fclose(p_file);
 	fclose(single_col_file);
 
 }
@@ -395,20 +312,9 @@ void BiggerSource::MemAllo(const char* file_name)
     size_t colmns = 18;
     rows = getFileLines(file_name);
 
-    headers.reserve(colmns);
-
 	paper_id = new int[rows];
     rollnumber = new long long[rows];
     name = new std::string[rows];
-	try
-	{
-		resultsDataStructure = new ResultsDataStructure[rows];
-	}
-	catch (std::bad_alloc err)
-	{
-		printf_stream(stderr, "Memory Alloc error \n %s",err.what());
-		throw;
-	}
 
 	length_name = 0;
 	maxLength_name = 0;
@@ -419,14 +325,10 @@ void BiggerSource::MemAllo(const char* file_name)
 
 void BiggerSource::MemFree()
 {
-
-    headers.clear();
-
+	
 	delete [] paper_id;
     delete [] rollnumber;
     delete [] name;
-
-    delete [] resultsDataStructure;
 
 }
 
@@ -487,9 +389,6 @@ void BiggerSource::shellsort(int * toSort, size_t low, size_t high)
 			}
 
 }
-
-
-
 
 void BiggerSource::bubblesort(std::string * toSort, size_t low, size_t high)
 {
@@ -561,9 +460,6 @@ void BiggerSource::bubblesort(int * toSort, size_t low, size_t high)
 	}
 
 }
-
-
-
 
 void BiggerSource::quicksort(std::string * toSort, size_t low, size_t high)
 {
@@ -761,8 +657,6 @@ void BiggerSource::swap(size_t index_1, size_t index_2)
 		break;
 	}
 
-    SWAP(t_resultsDataStructure, index_1, index_2, resultsDataStructure);
-
 }
 
 bool BiggerSource::compare_isLess(std::string str1, std::string str2)
@@ -824,8 +718,6 @@ bool BiggerSource::compare_isMore(std::string str1, std::string str2)
 
 bool BiggerSource::checkComputation() 
 {
-	struct ResultsDSHolder resultsDSHolder;
-
 	int paper_id_old, paper_id_new;
 	long long rollnumber_old, rollnumber_new;
 	std::string name_old, name_new;
@@ -835,24 +727,23 @@ bool BiggerSource::checkComputation()
 	name_old = "";
 
 	for (size_t i = 0; i < rows; i++) {
-		resultsDataStructure[i].getValue(&resultsDSHolder);
 
 		switch (column_decide%3)
 		{
 		case 0:
-			rollnumber_new = resultsDSHolder.rollnumber;
+			rollnumber_new = rollnumber[i];
 			if (rollnumber_old > rollnumber_new)
 				return false;
 			rollnumber_old = rollnumber_new;
 			break;
 		case 1:
-			paper_id_new = resultsDSHolder.paper_id;
+			paper_id_new = paper_id[i];
 			if (paper_id_old > paper_id_new)
 				return false;
 			paper_id_old = paper_id_new;
 			break;
 		case 2:
-			name_new = resultsDSHolder.name;
+			name_new = name[i];
 			if (compare_isMore(name_old,name_new))
 				return false;
 			name_old = name_new;

@@ -295,7 +295,6 @@ bool Source::readFileToBuffer(std::string filePath,
 
 void Source::print_table(const char* file_name)
 {
-	FILE* p_file;
 	FILE* single_col_file;
 	std::string sorted_file_name(file_name);
 	int i_value;
@@ -307,7 +306,6 @@ void Source::print_table(const char* file_name)
 	sorted_file_name += std::to_string(init_num);
     sorted_file_name += ".csv";
 
-	fopen_stream(&p_file, file_name, "w");
 	fopen_stream(&single_col_file, sorted_file_name.c_str(), "w");
 	
 	for (size_t i = 0; i < rows; i++)
@@ -326,7 +324,6 @@ void Source::print_table(const char* file_name)
 		}
 	}
 
-	fclose(p_file);
 	fclose(single_col_file);
 }
 

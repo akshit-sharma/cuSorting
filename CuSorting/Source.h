@@ -29,14 +29,14 @@ protected:
 	std::string * sorted_col_string;
 	int * sorted_col_int;
 
+	static int init_num;
+
 	enum type
 	{
 		inte, string
 	};
 
 	enum type sorted_col_type;
-
-	static int init_num;
 
 	int * paper_id;
 	std::string * subject_name;
@@ -56,7 +56,7 @@ public:
 	virtual void preSorting();
 	virtual void sort();
 	virtual void postSorting();
-	void print_table(const char * file_name);
+	virtual void print_table(const char * file_name);
 	virtual void MemFree();
 	virtual bool checkComputation();
 

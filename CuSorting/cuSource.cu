@@ -30,7 +30,7 @@ void CuSource::sort() {
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
 			for (unsigned int i = 0; i < rows; i++) {
-				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_paper_id, rows);
+				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
 			}
@@ -60,7 +60,7 @@ void CuSource::MemAllo(const char* file_name)
 		break;
 	case 1:
 		gpuErrchk(
-			cudaMalloc((void **)&d_paper_id, rows * sizeof(TYPE_PAPER_ID))
+			cudaMalloc((void **)&d_int, rows * sizeof(TYPE_PAPER_ID))
 		);
 		break;
 	case 2:
@@ -90,7 +90,7 @@ void CuSource::preSorting()
 		break;
 	case 1:
 		gpuErrchk(
-			cudaMemcpy(d_paper_id, paper_id,
+			cudaMemcpy(d_int, paper_id,
 				rows * sizeof(int),
 				cudaMemcpyHostToDevice
 			)
@@ -118,7 +118,7 @@ void CuSource::MemFree()
 		break;
 	case 1:
 		gpuErrchk(
-			cudaFree(d_paper_id)
+			cudaFree(d_int)
 		);
 		break;
 	case 2:
@@ -143,7 +143,7 @@ void CuSource::postSorting()
 		break;
 	case 1:
 		gpuErrchk(
-			cudaMemcpy(paper_id, d_paper_id,
+			cudaMemcpy(paper_id, d_int,
 				rows * sizeof(int),
 				cudaMemcpyDeviceToHost
 			)

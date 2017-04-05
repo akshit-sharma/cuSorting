@@ -10,7 +10,7 @@
 class CuSource : public Source
 {
 	
-	int * d_paper_id;
+	int * d_int;
 
 	void write_file(const char * file_name,
 		SchemeDataStructure * schemeDataStructure);
