@@ -27,8 +27,13 @@ void CuBiggerSource::sort() {
 			//cudaDeviceSynchronize();
 			break;
 		case 2:
-			odd_even_sort_llong << <NUM_BLOCK, WID_BLOCK >> >(d_llong, rows);
-			cudaDeviceSynchronize();
+			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+			for (unsigned int i = 0; i < rows; i++) {
+				odd_even_sort_llong<<<num_blocks, WID_BLOCK>>>(d_llong, rows);
+				gpuErrchk(cudaPeekAtLastError());
+				gpuErrchk(cudaDeviceSynchronize());
+			}
 			break;
 		}
 		break;

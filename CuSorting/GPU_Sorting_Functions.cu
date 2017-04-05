@@ -34,8 +34,28 @@ __global__ void odd_even_sort_int(int * d_int, size_t maxLimit) {
 
 __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit)
 {
-	//Function body
+	size_t arrayIndex;
+	int t_llong;
 
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	arrayIndex = arrayIndex * 2;
+
+	if (arrayIndex + 1 < maxLimit) {
+		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
+		{
+			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
+		}
+		__syncthreads();
+		arrayIndex += 1;
+		if (arrayIndex + 1 < maxLimit) {
+			if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
+			{
+				SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
+			}
+		}
+		__syncthreads();
+	}
 }
 
 __global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit)
