@@ -14,23 +14,14 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 	}
 }
 
-__global__ void odd_even_sort_scheme_instiname(std::string * d_institutionNameWrapper_Scheme, size_t maxLimit);
-__global__ void odd_even_sort_scheme_subjname(std::string * d_subjectNameWrapper_Scheme, size_t maxLimit);
-__global__ void odd_even_sort_scheme_paperid(int * d_PaperId, size_t maxLimit);
-__global__ void odd_even_sort_results_paperid(int * d_int, size_t maxLimit);
-__global__ void odd_even_sort_results_rollnumber(long * d_results_rollnumberWrapper_Results, size_t maxLimit);
-__global__ void odd_even_sort_results_name(std::string * d_nameWrapper_Results, size_t maxLimit);
+__global__ void odd_even_sort_int(int * d_int, size_t maxLimit);
+__global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit);
+__global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void shellsort_scheme_instiname(std::string * d_institutionNameWrapper_Scheme, size_t maxLimit);
-__global__ void shellsort_scheme_subjname(std::string * d_subjectNameWrapper_Scheme, size_t maxLimit);
-__global__ void shellsort_scheme_paperid(int * d_PaperId, size_t maxLimit);
-__global__ void shellsort_results_paperid(int * d_int, size_t maxLimit);
-__global__ void shellsort_results_rollnumber(long * d_results_rollnumberWrapper_Results, size_t maxLimit);
-__global__ void shellsort_results_name(std::string * d_nameWrapper_Results, size_t maxLimit);
+__global__ void shellsort_int(int * d_int, size_t maxLimit);
+__global__ void shellsort_llong(long long * d_llong, size_t maxLimit);
+__global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void quicksort_scheme_instiname(std::string * d_institutionNameWrapper_Scheme, size_t maxLimit);
-__global__ void quicksort_scheme_subjname(std::string * d_subjectNameWrapper_Scheme, size_t maxLimit);
-__global__ void quicksort_scheme_paperid(int * d_PaperId, size_t maxLimit);
-__global__ void quicksort_results_paperid(int * d_int, size_t maxLimit);
-__global__ void quicksort_results_rollnumber(long * d_results_rollnumberWrapper_Results, size_t maxLimit);
-__global__ void quicksort_results_name(std::string * d_nameWrapper_Results, size_t maxLimit);
+__global__ void quicksort_int(int * d_int, size_t maxLimit);
+__global__ void quicksort_llong(long long * d_llong, size_t maxLimit);
+__global__ void quicksort_string(std::string * d_string, size_t maxLimit);

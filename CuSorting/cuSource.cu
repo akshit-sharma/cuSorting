@@ -31,7 +31,7 @@ void CuSource::sort() {
 			num_blocks = (num_blocks / 2) + 1;
 			//print_debug_specific
 			for (unsigned int i = 0; i < rows; i++) {
-				odd_even_sort_scheme_paperid<<<num_blocks, WID_BLOCK>>>(d_paper_id, rows);
+				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_paper_id, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
 			}
