@@ -29,7 +29,6 @@ void CuSource::sort() {
 		case 2:
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
-			//print_debug_specific
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_paper_id, rows);
 				gpuErrchk(cudaPeekAtLastError());
@@ -79,7 +78,6 @@ void CuSource::MemAllo(const char* file_name)
 void CuSource::preSorting()
 {
 	Source::preSorting();
-	//cudaMalloc((void **) d_schemeDataStructure, rows * sizeof(SchemeDataStructure));
 
 	switch (column_decide % 3)
 	{
@@ -91,7 +89,6 @@ void CuSource::preSorting()
 		// TODO: cudaMemcpy
 		break;
 	case 1:
-		//copy_data(paperIdWrapper, rows);
 		gpuErrchk(
 			cudaMemcpy(d_paper_id, paper_id,
 				rows * sizeof(int),
@@ -113,8 +110,6 @@ void CuSource::preSorting()
 
 void CuSource::MemFree()
 {
-	//cudaFree(d_schemeDataStructure);
-
 	switch (column_decide % 3)
 	{
 	case 0:
