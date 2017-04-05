@@ -22,6 +22,6 @@ __global__ void shellsort_int(int * d_int, size_t maxLimit);
 __global__ void shellsort_llong(long long * d_llong, size_t maxLimit);
 __global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void quicksort_int(int * d_int, size_t maxLimit);
+__global__ void quicksort_int(unsigned int *data, int left, int right, int depth);
 __global__ void quicksort_llong(long long * d_llong, size_t maxLimit);
 __global__ void quicksort_string(std::string * d_string, size_t maxLimit);

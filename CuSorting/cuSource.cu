@@ -19,8 +19,11 @@ void CuSource::sort() {
 		switch ((column_decide - 1) / 3)
 		{
 		case 0:
-			//quicksort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			gpuErrchk(cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH));
+			int left = 0;
+			int right = rows - 1;
+			quicksort_int<<< 1, 1>>>(d_int, left, right, 0);
+			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
 			//shellsort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);

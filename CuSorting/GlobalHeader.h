@@ -27,6 +27,9 @@ void __syncthreads(void);
 void __threadfence(void);
 #endif
 
+#define MAX_DEPTH       16
+#define INSERTION_SORT  32
+
 
 #define SWAP(temp_var, index_1, index_2, array_name)     \
 	temp_var = array_name[index_1];	                     \
