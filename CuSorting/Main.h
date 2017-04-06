@@ -5,34 +5,34 @@
 #define BoolToCheck																						\
 		computationCheckAnswer?"Correct":"Wrong"																									
 
-#define call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
-	if(!skip_cpu){																							\
-				runSort(source_obj, small_number, sort_small);												\
-	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
-		technique, "scheme", "cpu", memory_alloc_time, small_col, pre_sort_duration, *sort_small,			\
-					post_sort_duration, memory_dealloc_time, BoolToCheck);									\
-	}																										\
+#define call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\																										\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 			runSort(cu_source_obj, small_number, sort_small);												\
 	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
 		technique, "scheme", "gpu", memory_alloc_time, small_col, pre_sort_duration,						\
 		*sort_small, post_sort_duration, memory_dealloc_time, BoolToCheck);									\
+	}																										\
+	if(!skip_cpu){																							\
+				runSort(source_obj, small_number, sort_small);												\
+	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
+		technique, "scheme", "cpu", memory_alloc_time, small_col, pre_sort_duration, *sort_small,			\
+					post_sort_duration, memory_dealloc_time, BoolToCheck);									\
 	}
 
-#define call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
-	if(!skip_cpu){																							\
-				runSort(big_source_obj, big_number, sort_big);												\
-	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
-		technique, "result", "cpu", memory_alloc_time, big_col, pre_sort_duration,							\
-		*sort_small, post_sort_duration, memory_dealloc_time, BoolToCheck);									\
-	}																										\
+#define call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\																		\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 		runSort(cu_big_source_obj, big_number, sort_big);													\
 	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s |"											\
 														" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",	\
 					technique, "result", "gpu", memory_alloc_time, big_col, pre_sort_duration,				\
 					*sort_small, post_sort_duration, memory_dealloc_time, BoolToCheck);						\
-	}
+	}																										\
+	if(!skip_cpu){																							\
+				runSort(big_source_obj, big_number, sort_big);												\
+	printf_stream(stdout, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
+		technique, "result", "cpu", memory_alloc_time, big_col, pre_sort_duration,							\
+		*sort_small, post_sort_duration, memory_dealloc_time, BoolToCheck);									\
+	}								
 
 #define both_call_runsort_skip(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 		call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu);	\

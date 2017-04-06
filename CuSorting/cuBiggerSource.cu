@@ -10,6 +10,10 @@
 void CuBiggerSource::sort() {
 
 	unsigned int num_blocks;
+	int left, right;
+	float progress, last_prog;
+
+	last_prog = 0.0f;
 
 	switch (column_decide % 3)
 	{
@@ -29,10 +33,17 @@ void CuBiggerSource::sort() {
 		case 2:
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
+			printf_stream(stdout,"\n");
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_llong<<<num_blocks, WID_BLOCK>>>(d_llong, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
+				/*
+				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
+				printf_stream(stdout, "\rDone with %7.4f percent \n",
+					progress);
+				*/
+				
 			}
 			break;
 		}
@@ -44,9 +55,10 @@ void CuBiggerSource::sort() {
 		{
 		case 0:
 			gpuErrchk(cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH));
-			int left = 0;
-			int right = rows - 1;
+			left = 0;
+			right = static_cast<int>(rows - 1);
 			quicksort_int<<< 1, 1>>>(d_int, left, right, 0);
+			gpuErrchk(cudaPeekAtLastError());
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
@@ -56,10 +68,19 @@ void CuBiggerSource::sort() {
 		case 2:
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
+			printf_stream(stdout, "\n");
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
+				
+				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
+				if (progress > (static_cast<int>(last_prog+5)%100)) {
+					printf_stream(stdout, "\rDone with %7.4f percent \n",
+						progress);
+					last_prog = progress;
+				}
+				
 			}
 			break;
 		default:

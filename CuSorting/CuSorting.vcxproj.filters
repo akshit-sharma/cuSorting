@@ -42,9 +42,6 @@
     <ClInclude Include="GPU_Sorting_Functions.cuh">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Debugger.h">
-      <Filter>Header</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BiggerSource.cpp">
@@ -63,9 +60,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="GlobalHeader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Debugger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

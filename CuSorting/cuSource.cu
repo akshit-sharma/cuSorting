@@ -1,13 +1,14 @@
 
 #include "cuSource.h"
 #include <cuda_runtime.h>
-#include "Debugger.h"
 
 #include "GPU_Sorting_Functions.cuh"
 
 void CuSource::sort() {
 
 	unsigned int num_blocks;
+	int left, right;
+	size_t gpu_loop;
 
 	switch (column_decide % 3)
 	{
@@ -20,9 +21,10 @@ void CuSource::sort() {
 		{
 		case 0:
 			gpuErrchk(cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH));
-			int left = 0;
-			int right = rows - 1;
+			left = 0;
+			right = right = static_cast<int>(rows - 1);
 			quicksort_int<<< 1, 1>>>(d_int, left, right, 0);
+			gpuErrchk(cudaPeekAtLastError());
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
@@ -30,8 +32,18 @@ void CuSource::sort() {
 			cudaDeviceSynchronize();
 			break;
 		case 2:
+			gpu_loop = 1024;
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
+			/*
+			num_blocks = (num_blocks / gpu_loop) + 1;
+				for (unsigned int i = 0; i < rows; i++) {
+					odd_even_sort_int_xtra<<<num_blocks, WID_BLOCK>>>(d_int, rows, gpu_loop);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+
+			*/
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());

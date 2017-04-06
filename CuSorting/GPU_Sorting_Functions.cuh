@@ -15,6 +15,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 }
 
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit);
+__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t loop);
 __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit);
 __global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit);
 
@@ -22,6 +23,6 @@ __global__ void shellsort_int(int * d_int, size_t maxLimit);
 __global__ void shellsort_llong(long long * d_llong, size_t maxLimit);
 __global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void quicksort_int(unsigned int *data, int left, int right, int depth);
+__global__ void quicksort_int(int *data, int left, int right, int depth);
 __global__ void quicksort_llong(long long * d_llong, size_t maxLimit);
 __global__ void quicksort_string(std::string * d_string, size_t maxLimit);

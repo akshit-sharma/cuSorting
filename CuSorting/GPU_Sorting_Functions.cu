@@ -6,6 +6,38 @@
 #include "SchemeDataStructure.h"
 #include "cuSource.h"
 
+__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t loop)
+{
+	size_t arrayIndex;
+	size_t i, end;
+	int t_int;
+
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	arrayIndex = arrayIndex * 2;
+	
+	end = (arrayIndex * loop);
+
+	for (i = loop; i < end; i+=2) {
+		arrayIndex = i;
+		if (arrayIndex + 1 < maxLimit) {
+			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+			{
+				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
+			}
+			__syncthreads();
+			arrayIndex += 1;
+			if (arrayIndex + 1 < maxLimit) {
+				if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+				{
+					SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
+				}
+			}
+			__syncthreads();
+		}
+	}
+}
+
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit) {
 	size_t arrayIndex;
 	int t_int;
@@ -84,17 +116,17 @@ __global__ void shellsort_string(std::string * d_string, size_t maxLimit)
 
 
 ///=============FROM cdpSimpleQuicksort example===============///
-__device__ void selection_sort(unsigned int *data, int left, int right)
+__device__ void selection_sort_int(int *data, int left, int right)
 {
 	for (int i = left; i <= right; ++i)
 	{
-		unsigned min_val = data[i];
+		int min_val = data[i];
 		int min_idx = i;
 
 		// Find the smallest value in the range [left, right].
 		for (int j = i + 1; j <= right; ++j)
 		{
-			unsigned val_j = data[j];
+			int val_j = data[j];
 
 			if (val_j < min_val)
 			{
@@ -112,25 +144,26 @@ __device__ void selection_sort(unsigned int *data, int left, int right)
 	}
 }
 
-__global__ void quicksort_int(unsigned int *data, int left, int right, int depth)
+__global__  void quicksort_int(int *data, int left, int right, int depth)
 {
+/*
 	// If we're too deep or there are few elements left, we use an insertion sort...
 	if (depth >= MAX_DEPTH || right - left <= INSERTION_SORT)
 	{
-		selection_sort(data, left, right);
+		selection_sort_int(data, left, right);
 		return;
 	}
 
-	unsigned int *lptr = data + left;
-	unsigned int *rptr = data + right;
-	unsigned int  pivot = data[(left + right) / 2];
+	int *lptr = data + left;
+	int *rptr = data + right;
+	int  pivot = data[(left + right) / 2];
 
 	// Do the partitioning.
 	while (lptr <= rptr)
 	{
 		// Find the next left- and right-hand values to swap
-		unsigned int lval = *lptr;
-		unsigned int rval = *rptr;
+		int lval = *lptr;
+		int rval = *rptr;
 
 		// Move the left pointer as long as the pointed element is smaller than the pivot.
 		while (lval < pivot)
@@ -175,6 +208,7 @@ __global__ void quicksort_int(unsigned int *data, int left, int right, int depth
 		quicksort_int<<< 1, 1, 0, s1 >>>(data, nleft, right, depth + 1);
 		cudaStreamDestroy(s1);
 	}
+	*/
 }
 
 __global__ void quicksort_llong(long long * d_llong, size_t maxLimit)

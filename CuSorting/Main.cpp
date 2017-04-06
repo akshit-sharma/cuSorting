@@ -151,7 +151,7 @@ int main(int argc, char ** argv)
 	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
 //	both_call_runsort_skip("quicksort", 4, "subjName", 5, "name", skip_quick_cpu, skip_quick_gpu);
 //	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
-	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
+//	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	
 	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu, skip_shell_gpu);
