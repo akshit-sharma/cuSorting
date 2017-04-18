@@ -5,6 +5,8 @@
 #include "SchemeDataStructure.h"
 #include "Main.h"
 
+#include "time.h"
+
 #pragma once
 class Source : public virtual main_class
 {
@@ -49,15 +51,19 @@ protected:
 
 	size_t rows;
 
+	clock_t startTimer();
+	clock_t endTimer();
+	double getTimeElapsed(clock_t start, clock_t end);
+
 public:
 	virtual void selectColumn(int column);
-	virtual void MemAllo(const char* file_name);
-	void readFile(const char * file_name);
-	virtual void preSorting();
-	virtual void sort();
-	virtual void postSorting();
-	virtual void print_table(const char * file_name);
-	virtual void MemFree();
+	virtual double MemAllo(const char* file_name);
+	virtual double readFile(const char * file_name);
+	virtual double preSorting();
+	virtual double sort();
+	virtual double postSorting();
+	virtual double print_table(const char * file_name);
+	virtual double MemFree();
 	virtual bool checkComputation();
 
 };

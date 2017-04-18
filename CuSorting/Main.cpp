@@ -36,69 +36,43 @@ const char * file_name_small;
 const char * file_name_big;
 const char * output_file_name;
 
-void runSort(main_class * source_obj, int value, double * timeTaken)
+void runSort(main_class * source_obj, int value)
 {
-
-	std::clock_t start;
-	double duration;
-
+	
 	source_obj->selectColumn(value / 2);
 
-	start = std::clock();
 	if (value % 2 == 0)
-		source_obj->MemAllo(file_name_small);
+		memory_alloc_time = source_obj->MemAllo(file_name_small);
 	else
-		source_obj->MemAllo(file_name_big);
-	memory_alloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+		memory_alloc_time = source_obj->MemAllo(file_name_big);
 	
-	start = std::clock();
 	if(!skip_input){
 		if(value % 2 == 0)
-			source_obj->readFile(file_name_small);
+			avg_read_times_small += source_obj->readFile(file_name_small);
 		else
-			source_obj->readFile(file_name_big);
+			avg_read_times_big += source_obj->readFile(file_name_big);
 	}
-	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	
-	if (value % 2 == 0)
-		avg_read_times_small += duration;
-	else
-		avg_read_times_big += duration;
-
-	start = std::clock();
-	source_obj->preSorting();
-	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
-	pre_sort_duration = duration;
-
-	start = std::clock();
+	pre_sort_duration = source_obj->preSorting();
+	
 	if(!skip_sorting)
-	source_obj->sort();
-	duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
-	sort_duration = duration;
-
-	start = std::clock();
-	source_obj->postSorting();
-	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+		sort_duration = source_obj->sort();
 	
-	start = std::clock();
+	post_sort_duration = source_obj->postSorting();
+	
 	if (!skip_check_output)
 		computationCheckAnswer = source_obj->checkComputation();
-	post_sort_duration = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
 	
 	if(!computationCheckAnswer)
 		source_obj->print_table(output_file_name);
 
-	start = std::clock();
-	source_obj->MemFree();
-	memory_dealloc_time = (std::clock() - start) / static_cast<double> CLOCKS_PER_SEC;
+	memory_dealloc_time = source_obj->MemFree();
 	 
 	if (value % 2 == 0)
 		small_times++;
 	else
 		big_times++;
-
-	*timeTaken = sort_duration;
-
+	
 }
 
 int main(int argc, char ** argv)
@@ -151,12 +125,12 @@ int main(int argc, char ** argv)
 	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
 //	both_call_runsort_skip("quicksort", 4, "subjName", 5, "name", skip_quick_cpu, skip_quick_gpu);
 //	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
-//	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
+	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	
 	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
-	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+//	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
 	
 	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
 //	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu, skip_bubble_gpu);

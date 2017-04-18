@@ -9,7 +9,10 @@
 
 int Source::init_num = 0;
 
-void Source::preSorting() {
+double Source::preSorting() {
+
+	clock_t start;
+	start = startTimer();
 
 	switch (column_decide%3)
 	{
@@ -31,10 +34,14 @@ void Source::preSorting() {
 		break;
 	}
 
+	return getTimeElapsed(start, endTimer());
 }
 
-void Source::sort()
+double Source::sort()
 {
+	clock_t start;
+	start = startTimer();
+
 	switch (column_decide)
 	{
 	case 1:
@@ -67,11 +74,15 @@ void Source::sort()
 	default:
 		break;
 	}
+	return getTimeElapsed(start, endTimer());
 }
 
-void Source::postSorting()
+double Source::postSorting()
 {
-	return;
+	clock_t start;
+	start = startTimer();
+
+	return getTimeElapsed(start, endTimer());
 }
 
 size_t Source::getFileLines(const char* file_name) 
@@ -98,8 +109,11 @@ size_t Source::getFileLines(const char* file_name)
 
 }
 
-void Source::readFile(const char* file_name)
+double Source::readFile(const char* file_name)
 {
+	clock_t start;
+	start = startTimer();
+
 	std::vector<unsigned char> buffer;
 	char temp_var[128];
 	char line[513];
@@ -268,11 +282,15 @@ void Source::readFile(const char* file_name)
 
 	file.close();
 
+	return getTimeElapsed(start, endTimer());
 }
 
 bool Source::readFileToBuffer(std::string filePath,
                               std::vector<unsigned char>& buffer)
 {
+	clock_t start;
+	start = startTimer();
+
 	std::ifstream file(filePath,
 	                   std::ios::binary | std::ios::in);
 	if (file.fail())
@@ -293,8 +311,11 @@ bool Source::readFileToBuffer(std::string filePath,
 	return true;
 }
 
-void Source::print_table(const char* file_name)
+double Source::print_table(const char* file_name)
 {
+	clock_t start;
+	start = startTimer();
+
 	FILE* single_col_file;
 	std::string sorted_file_name(file_name);
 	int i_value;
@@ -325,6 +346,8 @@ void Source::print_table(const char* file_name)
 	}
 
 	fclose(single_col_file);
+
+	return getTimeElapsed(start, endTimer());
 }
 
 void Source::selectColumn(int column)
@@ -332,8 +355,11 @@ void Source::selectColumn(int column)
 	this->column_decide = column;
 }
 
-void Source::MemAllo(const char* file_name)
+double Source::MemAllo(const char* file_name)
 {
+	clock_t start;
+	start = startTimer();
+
 	size_t colmns = 21;
 	rows = getFileLines(file_name);
 
@@ -349,15 +375,21 @@ void Source::MemAllo(const char* file_name)
 
 	init_num++;
 
+	return getTimeElapsed(start, endTimer());
+
 }
 
-void Source::MemFree()
+double Source::MemFree()
 {
+	clock_t start;
+	start = startTimer();
+
 
 	delete [] (institution_name);
 	delete [] (paper_id);
 	delete [] (subject_name);
 
+	return getTimeElapsed(start, endTimer());
 }
 
 void Source::shellsort(std::string* toSort, size_t low, size_t high)
@@ -683,5 +715,18 @@ bool Source::checkComputation()
 
 }
 
+std::clock_t Source::startTimer() 
+{
+	return std::clock();
+}
 
+std::clock_t Source::endTimer()
+{
+	return std::clock();
+}
+
+double Source::getTimeElapsed(std::clock_t start, std::clock_t end)
+{
+	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
 

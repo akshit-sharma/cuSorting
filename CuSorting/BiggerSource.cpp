@@ -9,8 +9,11 @@
 
 int BiggerSource::init_num = 0;
 
-void BiggerSource::preSorting()
+double BiggerSource::preSorting()
 {
+	clock_t start;
+	start = startTimer();
+
 	switch (column_decide % 3)
 	{
 
@@ -31,10 +34,14 @@ void BiggerSource::preSorting()
 		break;
 	}
 
+	return getTimeElapsed(start, endTimer());
 }
 
-void BiggerSource::sort()
+double BiggerSource::sort()
 {
+	clock_t start;
+	start = startTimer();
+
 	switch (column_decide)
 	{
 	case 1:
@@ -68,11 +75,15 @@ void BiggerSource::sort()
 		break;
 	}
 
+	return getTimeElapsed(start, endTimer());
 }
 
-void BiggerSource::postSorting()
+double BiggerSource::postSorting()
 {
-	return;
+	clock_t start;
+	start = startTimer();
+
+	return getTimeElapsed(start, endTimer());
 }
 
 size_t BiggerSource::getFileLines(const char* file_name)
@@ -99,8 +110,10 @@ size_t BiggerSource::getFileLines(const char* file_name)
 
 }
 
-void BiggerSource::readFile(const char* file_name)
+double BiggerSource::readFile(const char* file_name)
 {
+	clock_t start;
+	start = startTimer();
 
     std::vector<unsigned char> buffer;
     char temp_var[128];
@@ -239,6 +252,8 @@ void BiggerSource::readFile(const char* file_name)
 
     file.close();
 
+
+	return getTimeElapsed(start, endTimer());
 }
 
 bool BiggerSource::readFileToBuffer(std::string filePath,
@@ -266,8 +281,11 @@ bool BiggerSource::readFileToBuffer(std::string filePath,
 
 }
 
-void BiggerSource::print_table(const char * file_name)
+double BiggerSource::print_table(const char * file_name)
 {
+	clock_t start;
+	start = startTimer();
+
 	FILE * single_col_file;
 	std::string sorted_file_name(file_name);
 
@@ -300,6 +318,7 @@ void BiggerSource::print_table(const char * file_name)
 
 	fclose(single_col_file);
 
+	return getTimeElapsed(start, endTimer());
 }
 
 void BiggerSource::selectColumn(int column)
@@ -307,8 +326,11 @@ void BiggerSource::selectColumn(int column)
 	this->column_decide = column;
 }
 
-void BiggerSource::MemAllo(const char* file_name)
+double BiggerSource::MemAllo(const char* file_name)
 {
+	clock_t start;
+	start = startTimer();
+
     size_t colmns = 18;
     rows = getFileLines(file_name);
 
@@ -321,15 +343,19 @@ void BiggerSource::MemAllo(const char* file_name)
 
 	init_num++;
 
+	return getTimeElapsed(start, endTimer());
 }
 
-void BiggerSource::MemFree()
+double BiggerSource::MemFree()
 {
+	clock_t start;
+	start = startTimer();
 	
 	delete [] paper_id;
     delete [] rollnumber;
     delete [] name;
 
+	return getTimeElapsed(start, endTimer());
 }
 
 void BiggerSource::shellsort(std::string * toSort, size_t low, size_t high)
@@ -757,3 +783,20 @@ bool BiggerSource::checkComputation()
 	return true;
 
 }
+
+std::clock_t BiggerSource::startTimer()
+{
+	return std::clock();
+}
+
+
+std::clock_t BiggerSource::endTimer()
+{
+	return std::clock();
+}
+
+double BiggerSource::getTimeElapsed(std::clock_t start, std::clock_t end)
+{
+	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
+

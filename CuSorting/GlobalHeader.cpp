@@ -5,8 +5,8 @@ const bool skip_quick_cpu = true;
 const bool skip_shell_cpu = true;
 const bool skip_bubble_cpu = true;
 const bool skip_quick_gpu = true;
-const bool skip_shell_gpu = true;
-const bool skip_bubble_gpu = false;
+const bool skip_shell_gpu = false;
+const bool skip_bubble_gpu = true;
 
 const bool skip_input = false;
 const bool skip_sorting = false;

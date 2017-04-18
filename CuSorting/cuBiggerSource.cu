@@ -2,15 +2,21 @@
 #include "cuBiggerSource.h"
 #include <cuda_runtime.h>
 
+#include "time.h"
+
 #include "GPU_Sorting_Functions.cuh"
 
 #define NUM_BLOCK 65535
 #define WID_BLOCK 1024
 
-void CuBiggerSource::sort() {
+double CuBiggerSource::sort() {
+
+	cudaEvent_t start, stop;
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	unsigned int num_blocks;
-	int left, right;
+	size_t left, right;
 	float progress, last_prog;
 
 	last_prog = 0.0f;
@@ -23,27 +29,32 @@ void CuBiggerSource::sort() {
 		switch ((column_decide - 1) / 3)
 		{
 		case 0:
-			//quicksort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
-			//cudaDeviceSynchronize();
+			left = 0;
+			right = static_cast<size_t>(rows - 1);
+			quicksort_llong<<< 1, 1 >>>(d_llong, left, right, 0);
+			gpuErrchk(cudaPeekAtLastError());
+			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
 			//shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
 			//cudaDeviceSynchronize();
 			break;
 		case 2:
-			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
+			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
 			printf_stream(stdout,"\n");
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_llong<<<num_blocks, WID_BLOCK>>>(d_llong, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
-				/*
-				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
-				printf_stream(stdout, "\rDone with %7.4f percent \n",
-					progress);
-				*/
 				
+				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
+				if (progress >(static_cast<int>(last_prog + 10) % 300)) {
+					printf_stream(stdout, "\rDone with %7.4f percent \n",
+						progress);
+					last_prog = progress;
+				}
+
 			}
 			break;
 		}
@@ -63,20 +74,27 @@ void CuBiggerSource::sort() {
 			break;
 		case 1:
 			//shellsort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			//cudaDeviceSynchronize();
+			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+
+			for (unsigned int i = rows / 2; i > 0; i /= 2) {
+				shellsort_int << <num_blocks, WID_BLOCK >> >(d_int, rows, i, 0, d_xtra_int);
+				gpuErrchk(cudaPeekAtLastError());
+				gpuErrchk(cudaDeviceSynchronize());
+			}
 			break;
 		case 2:
 			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
-			printf_stream(stdout, "\n");
+			//printf_stream(stdout, "\n");
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
 				
 				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
-				if (progress > (static_cast<int>(last_prog+5)%100)) {
-					printf_stream(stdout, "\rDone with %7.4f percent \n",
+				if (progress > (static_cast<int>(last_prog+10)%300)) {
+					printf_stream(stdout, "\rDone with %8.4f percent of result of paper_id\n",
 						progress);
 					last_prog = progress;
 				}
@@ -93,12 +111,26 @@ void CuBiggerSource::sort() {
 	default:
 		break;
 	}
+
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return getTimeElapsed(start, stop);
+
 }
 
 
-void CuBiggerSource::MemAllo(const char* file_name)
+double CuBiggerSource::MemAllo(const char* file_name)
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+	c_start = startTimer();
+
 	BiggerSource::MemAllo(file_name);
+
+	c_end = endTimer();
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	switch (column_decide % 3)
 	{
@@ -111,6 +143,9 @@ void CuBiggerSource::MemAllo(const char* file_name)
 		gpuErrchk(
 			cudaMalloc((void **)&d_int, rows * sizeof(int))
 		);
+		gpuErrchk(
+			cudaMalloc((void **)&d_xtra_int, rows * sizeof(int))
+		);
 		break;
 	case 2:
 		// NOT READY
@@ -121,13 +156,25 @@ void CuBiggerSource::MemAllo(const char* file_name)
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return  getTimeElapsed(c_start, c_end) + getTimeElapsed(start, stop);
 
 }
 
 
-void CuBiggerSource::preSorting()
+double CuBiggerSource::preSorting()
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+	c_start = startTimer();
+
 	BiggerSource::preSorting();
+
+	c_end = endTimer();
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	switch (column_decide % 3)
 	{
@@ -148,9 +195,20 @@ void CuBiggerSource::preSorting()
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return  getTimeElapsed(c_start, c_end) + getTimeElapsed(start, stop);
+
 }
 
-void CuBiggerSource::MemFree() {
+double CuBiggerSource::MemFree() {
+
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	switch (column_decide % 3)
 	{
@@ -158,6 +216,7 @@ void CuBiggerSource::MemFree() {
 		cudaFree(d_llong);
 		break;
 	case 1:
+		cudaFree(d_xtra_int);
 		cudaFree(d_int);
 		break;
 	case 2:
@@ -166,13 +225,27 @@ void CuBiggerSource::MemFree() {
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	c_start = startTimer();
+
 	BiggerSource::MemFree();
+
+	c_end = endTimer();
+
+	return  getTimeElapsed(c_start, c_end) + getTimeElapsed(start, stop);
 
 }
 
 
-void CuBiggerSource::postSorting()
+double CuBiggerSource::postSorting()
 {
+	cudaEvent_t start, stop;
+
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
+
 	switch (column_decide % 3)
 	{
 	case 0:
@@ -192,10 +265,19 @@ void CuBiggerSource::postSorting()
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return getTimeElapsed(start, stop);
+
 }
 
-void CuBiggerSource::print_table(const char * file_name)
+double CuBiggerSource::print_table(const char * file_name)
 {
+	clock_t c_start, c_end;
+
+	c_start = startTimer();
+
 	FILE * p_file;
 	std::string sorted_file_name(file_name);
 
@@ -225,4 +307,49 @@ void CuBiggerSource::print_table(const char * file_name)
 	}
 
 	fclose(p_file);
+
+	c_end = endTimer();
+
+	return  getTimeElapsed(c_start, c_end);
 }
+
+void CuBiggerSource::initializeTimer(cudaEvent_t * start, cudaEvent_t * end)
+{
+	cudaEventCreate(start);
+	cudaEventCreate(end);
+}
+
+void CuBiggerSource::timerEventRecord(cudaEvent_t * timer)
+{
+	cudaEventRecord(*timer);
+}
+
+void CuBiggerSource::timerEventSync(cudaEvent_t * timer)
+{
+	cudaEventSynchronize(*timer);
+}
+
+double CuBiggerSource::getTimeElapsed(cudaEvent_t start, cudaEvent_t end)
+{
+	float milliseconds = 0;
+
+	cudaEventElapsedTime(&milliseconds, start, end);
+
+	return milliseconds / 1000;
+}
+
+clock_t CuBiggerSource::startTimer()
+{
+	return clock();
+}
+
+clock_t CuBiggerSource::endTimer()
+{
+	return clock();
+}
+
+double CuBiggerSource::getTimeElapsed(clock_t start, clock_t end)
+{
+	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
+

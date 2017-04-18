@@ -15,14 +15,16 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 }
 
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit);
-__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t loop);
 __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit);
 __global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void shellsort_int(int * d_int, size_t maxLimit);
+__global__ void shellsort_int(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int);
+__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size);
+__global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int);
+
 __global__ void shellsort_llong(long long * d_llong, size_t maxLimit);
 __global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
-__global__ void quicksort_int(int *data, int left, int right, int depth);
-__global__ void quicksort_llong(long long * d_llong, size_t maxLimit);
+__global__ void quicksort_int(int *data, size_t left, size_t right, size_t depth);
+__global__ void quicksort_llong(long long * data, size_t left, size_t right, size_t depth);
 __global__ void quicksort_string(std::string * d_string, size_t maxLimit);

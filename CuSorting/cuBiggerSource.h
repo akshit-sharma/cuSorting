@@ -6,18 +6,27 @@ class CuBiggerSource : public BiggerSource
 {
 
 	int * d_int;
+	int * d_xtra_int;
 	long long * d_llong;
 
 	void write_file(const char * file_name, 
 		ResultsDataStructure * resultsDataStructure);
 
+	clock_t startTimer();
+	clock_t endTimer();
+	double getTimeElapsed(clock_t start, clock_t end);
+	void initializeTimer(cudaEvent_t * start, cudaEvent_t * end);
+	void timerEventRecord(cudaEvent_t * timer);
+	void timerEventSync(cudaEvent_t * timer);
+	double getTimeElapsed(cudaEvent_t start, cudaEvent_t end);
+
 public:
-	virtual void MemAllo(const char* file_name);
-	virtual void preSorting();
-	virtual void sort();
-	virtual void postSorting();
-	virtual void print_table(const char * file_name);
-	virtual void MemFree();
+	virtual double MemAllo(const char* file_name);
+	virtual double preSorting();
+	virtual double sort();
+	virtual double postSorting();
+	virtual double print_table(const char * file_name);
+	virtual double MemFree();
 
 };
 

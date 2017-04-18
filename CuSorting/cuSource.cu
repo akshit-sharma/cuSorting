@@ -2,12 +2,22 @@
 #include "cuSource.h"
 #include <cuda_runtime.h>
 
+#include "time.h"
+
 #include "GPU_Sorting_Functions.cuh"
 
-void CuSource::sort() {
+double CuSource::sort() {
+
+	cudaEvent_t start, stop;
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	unsigned int num_blocks;
-	int left, right;
+	unsigned int num_threads_per_block;
+	bool sorted;
+	int pre_val;
+	size_t arr_size, num_arr;
+	size_t left, right;
 	size_t gpu_loop;
 
 	switch (column_decide % 3)
@@ -22,18 +32,123 @@ void CuSource::sort() {
 		case 0:
 			gpuErrchk(cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH));
 			left = 0;
-			right = right = static_cast<int>(rows - 1);
+			right = static_cast<size_t>(rows - 1);
 			quicksort_int<<< 1, 1>>>(d_int, left, right, 0);
 			gpuErrchk(cudaPeekAtLastError());
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
 			//shellsort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			cudaDeviceSynchronize();
+			gpu_loop = 1024;
+			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+			
+			for (unsigned int i = rows/2; i > 0; i /= 2) {
+				num_threads_per_block = rows;
+				num_arr = i + 1;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+				
+				//transfer data from d_int to d_xtra_int
+				printf_stream(stdout, "Value of rows %llu, i+1 %llu, arr_size %llu \n", rows, num_arr, arr_size);
+				shellsort_int << <num_blocks, num_threads_per_block >> >(d_int, rows, num_arr, arr_size, d_xtra_int);
+				gpuErrchk(cudaPeekAtLastError());
+				gpuErrchk(cudaDeviceSynchronize());
+				/*
+				gpuErrchk(
+					cudaMemcpy(paper_id, d_xtra_int,
+						rows * sizeof(int),
+						cudaMemcpyDeviceToHost
+					)
+				);
+				printf_stream(stdout, "Xtra_Arr (Source.cu) Array size %d \n %5d", i, 0);
+				for (unsigned int i = 0; i < rows; i++) {
+					printf_stream(stdout, " %7d", paper_id[i]);
+
+					if ((i + 1) % arr_size == 0)
+						printf_stream(stdout, " \n %5d",(i+1)/arr_size);
+				}
+				printf_stream(stdout, " \n");
+				*/
+
+				//odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t offset)
+				gpu_loop = 1024;
+				num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+				num_blocks = (num_blocks / 2) + 1;
+				for (unsigned int i = 0; i < arr_size; i++) {
+					odd_even_sort_int_xtra <<<num_blocks, WID_BLOCK >> >(d_xtra_int, rows, num_arr, arr_size);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+				
+				sorted = true;
+				gpuErrchk(
+					cudaMemcpy(paper_id, d_xtra_int,
+						rows * sizeof(int),
+						cudaMemcpyDeviceToHost
+					)
+				);
+				pre_val = INT_MIN;
+				printf_stream(stdout, "Xtra_Arr (Source.cu) Array size %d \n", i);
+				for (unsigned int i = 0; i < rows; i++) {
+					if (pre_val > paper_id[i]) {
+						sorted = false;
+						break;
+					}
+					pre_val = paper_id[i];
+
+					if ((i + 1) % arr_size == 0)
+						pre_val = INT_MIN;
+				}
+				if(!sorted)
+				for (unsigned int i = 0; i < rows; i++) {
+					printf_stream(stdout, " %7d", paper_id[i]);
+
+					if((i+1) % arr_size == 0)
+						printf_stream(stdout, " \n");
+				}
+				printf_stream(stdout, " \n");
+				
+
+				num_threads_per_block = rows;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+
+				//transfer data from d_int to d_xtra_int
+				if (i == 1) {
+					gpuErrchk(
+						cudaMemcpy(d_int, d_xtra_int,
+							rows * sizeof(int),
+							cudaMemcpyDeviceToDevice
+						)
+					);
+				}
+				else {
+					printf_stream(stdout, "Value of rows %llu, i+1 %llu, arr_size %llu \n", rows, num_arr, arr_size);
+					shellsort_int_back << <num_blocks, num_threads_per_block >> > (d_int, rows, num_arr, arr_size, d_xtra_int);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+			}
+
+			/*
+			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+			num_blocks = (num_blocks / 2) + 1;
+			odd_even_sort_int << <num_blocks, WID_BLOCK >> >(d_int, rows);
+			gpuErrchk(cudaPeekAtLastError());
+			gpuErrchk(cudaDeviceSynchronize());
+			*/
+
 			break;
 		case 2:
 			gpu_loop = 1024;
-			num_blocks = static_cast<int>(rows / WID_BLOCK) + 1;
+			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
 			/*
 			num_blocks = (num_blocks / gpu_loop) + 1;
@@ -58,11 +173,24 @@ void CuSource::sort() {
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return getTimeElapsed(start, stop);
+
 }
 
-void CuSource::MemAllo(const char* file_name)
+double CuSource::MemAllo(const char* file_name)
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+	c_start = startTimer();
+
 	Source::MemAllo(file_name);
+
+	c_end = endTimer();
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	switch (column_decide % 3)
 	{
@@ -77,6 +205,9 @@ void CuSource::MemAllo(const char* file_name)
 		gpuErrchk(
 			cudaMalloc((void **)&d_int, rows * sizeof(TYPE_PAPER_ID))
 		);
+		gpuErrchk(
+			cudaMalloc((void **)&d_xtra_int, rows * sizeof(TYPE_PAPER_ID))
+		);
 		break;
 	case 2:
 		// NOT READY
@@ -87,12 +218,25 @@ void CuSource::MemAllo(const char* file_name)
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
 
+	return  getTimeElapsed(c_start, c_end)+getTimeElapsed(start, stop);
 }
 
-void CuSource::preSorting()
+double CuSource::preSorting()
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+	size_t i;
+
+	c_start = startTimer();
+
 	Source::preSorting();
+
+	c_end = endTimer();
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
 
 	switch (column_decide % 3)
 	{
@@ -104,6 +248,11 @@ void CuSource::preSorting()
 		// TODO: cudaMemcpy
 		break;
 	case 1:
+		for (i = 0; i < rows; i++)
+		{
+			if (paper_id[i] < 10)
+				printf_stream(stderr, "Why is paper id less than 10 !! \n");
+		}
 		gpuErrchk(
 			cudaMemcpy(d_int, paper_id,
 				rows * sizeof(int),
@@ -120,11 +269,22 @@ void CuSource::preSorting()
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return  getTimeElapsed(c_start, c_end) + getTimeElapsed(start, stop);
+
 }
 
 
-void CuSource::MemFree()
+double CuSource::MemFree()
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
+
 	switch (column_decide % 3)
 	{
 	case 0:
@@ -132,6 +292,9 @@ void CuSource::MemFree()
 		//	delete[](h_institution_name);
 		break;
 	case 1:
+		gpuErrchk(
+			cudaFree(d_xtra_int)
+		);
 		gpuErrchk(
 			cudaFree(d_int)
 		);
@@ -142,13 +305,31 @@ void CuSource::MemFree()
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	c_start = startTimer();
+
 	Source::MemFree();
+
+	c_end = endTimer();
+
+	return  getTimeElapsed(c_start, c_end) + getTimeElapsed(start, stop);
+
 }
 
 
 
-void CuSource::postSorting()
+double CuSource::postSorting()
 {
+	clock_t c_start, c_end;
+	cudaEvent_t start, stop;
+
+	initializeTimer(&start, &stop);
+	timerEventRecord(&start);
+
+	int t_int;
+	size_t i;
 
 	switch (column_decide % 3)
 	{
@@ -163,6 +344,19 @@ void CuSource::postSorting()
 				cudaMemcpyDeviceToHost
 			)
 		);
+		/*
+		t_int = paper_id[0];
+		for (i = 0; i < rows; i++) {
+			if (paper_id[i + 1] == t_int) {
+				paper_id[i] = t_int;
+				break;
+			}
+			if (paper_id[i+1] < t_int)
+			{
+				paper_id[i] = paper_id[i + 1];
+			}
+		}
+		*/
 		break;
 	case 2:
 		//	cudaFree(d_subject_name);
@@ -170,10 +364,19 @@ void CuSource::postSorting()
 		break;
 	}
 
+	timerEventRecord(&stop);
+	timerEventSync(&stop);
+
+	return getTimeElapsed(start, stop);
+
 }
 
-void CuSource::write_file(const char * file_name, SchemeDataStructure * schemeDataStructure)
+double CuSource::print_table(const char * file_name)
 {
+	clock_t c_start, c_end;
+
+	c_start = startTimer();
+
 	FILE * p_file;
 	std::string sorted_file_name(file_name);
 	int i_value;
@@ -208,6 +411,50 @@ void CuSource::write_file(const char * file_name, SchemeDataStructure * schemeDa
 	}
 
 	fclose(p_file);
+
+	c_end = endTimer();
+
+	return  getTimeElapsed(c_start, c_end);
+
 }
 
+void CuSource::initializeTimer(cudaEvent_t * start, cudaEvent_t * end) 
+{
+	cudaEventCreate(start);
+	cudaEventCreate(end);
+}
+
+void CuSource::timerEventRecord(cudaEvent_t * timer)
+{
+	cudaEventRecord(*timer);
+}
+
+void CuSource::timerEventSync(cudaEvent_t * timer)
+{
+	cudaEventSynchronize(*timer);
+}
+
+double CuSource::getTimeElapsed(cudaEvent_t start, cudaEvent_t end)
+{
+	float milliseconds = 0;
+
+	cudaEventElapsedTime(&milliseconds, start, end);
+
+	return milliseconds/1000;
+}
+
+clock_t CuSource::startTimer()
+{
+	return clock();
+}
+
+clock_t CuSource::endTimer()
+{
+	return clock();
+}
+
+double CuSource::getTimeElapsed(clock_t start, clock_t end)
+{
+	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
 
