@@ -37,12 +37,7 @@ double CuSource::sort() {
 			gpuErrchk(cudaPeekAtLastError());
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
-		case 1:
-			//shellsort_scheme_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			gpu_loop = 1024;
-			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
-			num_blocks = (num_blocks / 2) + 1;
-			
+		case 1:			
 			for (unsigned int i = rows/2; i > 0; i /= 2) {
 				num_threads_per_block = rows;
 				num_arr = i + 1;
@@ -53,8 +48,7 @@ double CuSource::sort() {
 				arr_size = rows / i;
 				
 				//transfer data from d_int to d_xtra_int
-				printf_stream(stdout, "Value of rows %llu, i+1 %llu, arr_size %llu \n", rows, num_arr, arr_size);
-				shellsort_int << <num_blocks, num_threads_per_block >> >(d_int, rows, num_arr, arr_size, d_xtra_int);
+				shellsort_int << <num_blocks, num_threads_per_block >> >(d_int, rows, num_arr-1, arr_size, d_xtra_int);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
 				/*
@@ -66,10 +60,11 @@ double CuSource::sort() {
 				);
 				printf_stream(stdout, "Xtra_Arr (Source.cu) Array size %d \n %5d", i, 0);
 				for (unsigned int i = 0; i < rows; i++) {
-					printf_stream(stdout, " %7d", paper_id[i]);
+					if(paper_id[i] == 0)
+					printf_stream(stdout, " \n %5d %7d", i, paper_id[i]);
 
-					if ((i + 1) % arr_size == 0)
-						printf_stream(stdout, " \n %5d",(i+1)/arr_size);
+//					if ((i + 1) % arr_size == 0)
+//						printf_stream(stdout, " \n %5d",(i+1)/arr_size);
 				}
 				printf_stream(stdout, " \n");
 				*/
@@ -78,7 +73,7 @@ double CuSource::sort() {
 				gpu_loop = 1024;
 				num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
 				num_blocks = (num_blocks / 2) + 1;
-				for (unsigned int i = 0; i < arr_size; i++) {
+				for (unsigned int i = 0; i < (arr_size/2)+1; i++) {
 					odd_even_sort_int_xtra <<<num_blocks, WID_BLOCK >> >(d_xtra_int, rows, num_arr, arr_size);
 					gpuErrchk(cudaPeekAtLastError());
 					gpuErrchk(cudaDeviceSynchronize());
@@ -92,10 +87,10 @@ double CuSource::sort() {
 					)
 				);
 				pre_val = INT_MIN;
-				printf_stream(stdout, "Xtra_Arr (Source.cu) Array size %d \n", i);
 				for (unsigned int i = 0; i < rows; i++) {
 					if (pre_val > paper_id[i]) {
 						sorted = false;
+						printf_stream(stdout, "Elements %7d(%7d) and %7d(%7d) not sorted",paper_id[i-1],i-1,paper_id[i],i);
 						break;
 					}
 					pre_val = paper_id[i];
@@ -103,16 +98,17 @@ double CuSource::sort() {
 					if ((i + 1) % arr_size == 0)
 						pre_val = INT_MIN;
 				}
-				if(!sorted)
-				for (unsigned int i = 0; i < rows; i++) {
-					printf_stream(stdout, " %7d", paper_id[i]);
+				if (!sorted) {
+					printf_stream(stdout, "Xtra_Arr (Source.cu) Array size %d \n %5d", i, 0);
+					for (unsigned int i = 0; i < rows; i++) {
+						printf_stream(stdout, " %7d", paper_id[i]);
 
-					if((i+1) % arr_size == 0)
-						printf_stream(stdout, " \n");
+						if ((i + 1) % arr_size == 0)
+							printf_stream(stdout, " \n %5d", (i + 1) / arr_size);
+					}
+					printf_stream(stdout, " \n");
 				}
-				printf_stream(stdout, " \n");
 				
-
 				num_threads_per_block = rows;
 				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
 					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
@@ -130,35 +126,17 @@ double CuSource::sort() {
 					);
 				}
 				else {
-					printf_stream(stdout, "Value of rows %llu, i+1 %llu, arr_size %llu \n", rows, num_arr, arr_size);
-					shellsort_int_back << <num_blocks, num_threads_per_block >> > (d_int, rows, num_arr, arr_size, d_xtra_int);
+					shellsort_int_back << <num_blocks, num_threads_per_block >> > (d_int, rows, num_arr-1, arr_size, d_xtra_int);
 					gpuErrchk(cudaPeekAtLastError());
 					gpuErrchk(cudaDeviceSynchronize());
 				}
 			}
-
-			/*
-			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
-			num_blocks = (num_blocks / 2) + 1;
-			odd_even_sort_int << <num_blocks, WID_BLOCK >> >(d_int, rows);
-			gpuErrchk(cudaPeekAtLastError());
-			gpuErrchk(cudaDeviceSynchronize());
-			*/
-
 			break;
 		case 2:
 			gpu_loop = 1024;
 			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
-			/*
-			num_blocks = (num_blocks / gpu_loop) + 1;
-				for (unsigned int i = 0; i < rows; i++) {
-					odd_even_sort_int_xtra<<<num_blocks, WID_BLOCK>>>(d_int, rows, gpu_loop);
-					gpuErrchk(cudaPeekAtLastError());
-					gpuErrchk(cudaDeviceSynchronize());
-				}
-
-			*/
+			
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());
@@ -248,11 +226,6 @@ double CuSource::preSorting()
 		// TODO: cudaMemcpy
 		break;
 	case 1:
-		for (i = 0; i < rows; i++)
-		{
-			if (paper_id[i] < 10)
-				printf_stream(stderr, "Why is paper id less than 10 !! \n");
-		}
 		gpuErrchk(
 			cudaMemcpy(d_int, paper_id,
 				rows * sizeof(int),

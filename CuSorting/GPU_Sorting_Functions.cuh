@@ -22,7 +22,10 @@ __global__ void shellsort_int(int * d_int, size_t maxLimit, size_t num_arr, size
 __global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size);
 __global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int);
 
-__global__ void shellsort_llong(long long * d_llong, size_t maxLimit);
+__global__ void shellsort_llong_front(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong);
+__global__ void odd_even_sort_llong_xtra(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size);
+__global__ void shellsort_llong_back(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong);
+
 __global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
 __global__ void quicksort_int(int *data, size_t left, size_t right, size_t depth);

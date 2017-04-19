@@ -39,7 +39,7 @@
 
 #define both_call_runsort_skip(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 		call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu);	\
-//		call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu);		
+		call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu);		
 
 
 

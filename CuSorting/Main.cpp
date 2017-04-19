@@ -127,10 +127,10 @@ int main(int argc, char ** argv)
 //	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	
-	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+//	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
-//	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
 	
 	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
 //	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu, skip_bubble_gpu);

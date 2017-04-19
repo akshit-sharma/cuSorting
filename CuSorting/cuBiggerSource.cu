@@ -16,6 +16,8 @@ double CuBiggerSource::sort() {
 	timerEventRecord(&start);
 
 	unsigned int num_blocks;
+	unsigned int num_threads_per_block;
+	size_t arr_size, num_arr;
 	size_t left, right;
 	float progress, last_prog;
 
@@ -36,25 +38,67 @@ double CuBiggerSource::sort() {
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
-			//shellsort_results_rollnumber<<<NUM_BLOCK, WID_BLOCK>>>(d_rollNumberWrapper);
-			//cudaDeviceSynchronize();
+			for (unsigned int i = rows / 2; i > 0; i /= 2) {
+				num_threads_per_block = rows;
+				num_arr = i + 1;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+
+				//transfer data from d_int to d_xtra_int
+				shellsort_llong_front << <num_blocks, num_threads_per_block >> >(d_llong, rows, num_arr - 1, arr_size, d_xtra_llong);
+				gpuErrchk(cudaPeekAtLastError());
+				gpuErrchk(cudaDeviceSynchronize());
+
+				num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+				num_blocks = (num_blocks / 2) + 1;
+				for (unsigned int i = 0; i < (arr_size / 2) + 1; i++) {
+					odd_even_sort_llong_xtra << <num_blocks, WID_BLOCK >> >(d_xtra_llong, rows, num_arr, arr_size);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+
+				num_threads_per_block = rows;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+
+				//transfer data from d_int to d_xtra_int
+				if (i == 1) {
+					gpuErrchk(
+						cudaMemcpy(d_llong, d_xtra_llong,
+							rows * sizeof(long long),
+							cudaMemcpyDeviceToDevice
+						)
+					);
+				}
+				else {
+					shellsort_llong_back << <num_blocks, num_threads_per_block >> > (d_llong, rows, num_arr - 1, arr_size, d_xtra_llong);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+			}
 			break;
 		case 2:
 			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
 			num_blocks = (num_blocks / 2) + 1;
-			printf_stream(stdout,"\n");
+			//printf_stream(stdout,"\n");
 			for (unsigned int i = 0; i < rows; i++) {
 				odd_even_sort_llong<<<num_blocks, WID_BLOCK>>>(d_llong, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
-				
+				/*
 				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
 				if (progress >(static_cast<int>(last_prog + 10) % 300)) {
 					printf_stream(stdout, "\rDone with %7.4f percent \n",
 						progress);
 					last_prog = progress;
 				}
-
+				*/
 			}
 			break;
 		}
@@ -73,14 +117,52 @@ double CuBiggerSource::sort() {
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
-			//shellsort_results_paperid<<<NUM_BLOCK, WID_BLOCK>>>(d_paperIdWrapper);
-			num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
-			num_blocks = (num_blocks / 2) + 1;
 
 			for (unsigned int i = rows / 2; i > 0; i /= 2) {
-				shellsort_int << <num_blocks, WID_BLOCK >> >(d_int, rows, i, 0, d_xtra_int);
+				num_threads_per_block = rows;
+				num_arr = i + 1;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+
+				//transfer data from d_int to d_xtra_int
+				shellsort_int << <num_blocks, num_threads_per_block >> >(d_int, rows, num_arr - 1, arr_size, d_xtra_int);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
+
+				num_blocks = static_cast<unsigned int>(rows / WID_BLOCK) + 1;
+				num_blocks = (num_blocks / 2) + 1;
+				if (arr_size > UINT_MAX)
+					printf_s("NOT GOOD");
+				for (unsigned int i = 0; i < (arr_size / 2) + 1; i++) {
+					odd_even_sort_int_xtra << <num_blocks, WID_BLOCK >> >(d_xtra_int, rows, num_arr, arr_size);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
+
+				num_threads_per_block = rows;
+				if ((num_threads_per_block - 1) / WID_BLOCK > 0) {
+					num_blocks = (num_threads_per_block / WID_BLOCK) + 1;
+					num_threads_per_block = WID_BLOCK;
+				}
+				arr_size = rows / i;
+
+				//transfer data from d_int to d_xtra_int
+				if (i == 1) {
+					gpuErrchk(
+						cudaMemcpy(d_int, d_xtra_int,
+							rows * sizeof(int),
+							cudaMemcpyDeviceToDevice
+						)
+					);
+				}
+				else {
+					shellsort_int_back << <num_blocks, num_threads_per_block >> > (d_int, rows, num_arr - 1, arr_size, d_xtra_int);
+					gpuErrchk(cudaPeekAtLastError());
+					gpuErrchk(cudaDeviceSynchronize());
+				}
 			}
 			break;
 		case 2:
@@ -91,14 +173,14 @@ double CuBiggerSource::sort() {
 				odd_even_sort_int<<<num_blocks, WID_BLOCK>>>(d_int, rows);
 				gpuErrchk(cudaPeekAtLastError());
 				gpuErrchk(cudaDeviceSynchronize());
-				
+				/*
 				progress = (static_cast<float>(i) * 100) / static_cast<float>(rows);
 				if (progress > (static_cast<int>(last_prog+10)%300)) {
 					printf_stream(stdout, "\rDone with %8.4f percent of result of paper_id\n",
 						progress);
 					last_prog = progress;
 				}
-				
+				*/
 			}
 			break;
 		default:
@@ -137,6 +219,9 @@ double CuBiggerSource::MemAllo(const char* file_name)
 	case 0:
 		gpuErrchk(
 			cudaMalloc((void **)&d_llong, rows * sizeof(long long))
+		);
+		gpuErrchk(
+			cudaMalloc((void **)&d_xtra_llong, rows * sizeof(long long))
 		);
 		break;
 	case 1:
@@ -213,6 +298,7 @@ double CuBiggerSource::MemFree() {
 	switch (column_decide % 3)
 	{
 	case 0:
+		cudaFree(d_xtra_llong);
 		cudaFree(d_llong);
 		break;
 	case 1:

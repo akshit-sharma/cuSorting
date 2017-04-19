@@ -9,7 +9,7 @@
 __global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size)
 {
 	size_t arrayIndex;
-	size_t arr_end;
+	
 	int t_int;
 
 	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
@@ -17,33 +17,64 @@ __global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_
 	arrayIndex = arrayIndex * 2;
 
 		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-			if (d_int[arrayIndex] == 0) {
-				printf("0 at %llu\n", arrayIndex);
-			}
-			if (d_int[arrayIndex + 1] == 0) {
-				printf("0 at %llu\n", arrayIndex + 1);
-			}
 			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
 			{
 				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
 			}
-			__syncthreads();
-			arrayIndex += 1;
-			if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-				if (d_int[arrayIndex] == 0) {
-					printf("0 at %llu\n", arrayIndex);
-				}
-				if (d_int[arrayIndex + 1] == 0) {
-					printf("0 at %llu\n", arrayIndex + 1);
-				}
-				if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-				{
-					SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
-				}
-			}
-			__syncthreads();
 		}
+		__syncthreads();
+		arrayIndex += 1;
+		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+			{
+				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
+			}
+		}
+		__syncthreads();
+		arrayIndex -= 1;
+		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+			{
+				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
+			}
+		}
+		__syncthreads();
+		
+}
 
+__global__ void odd_even_sort_llong_xtra(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size)
+{
+	size_t arrayIndex;
+
+	long long t_llong;
+
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	arrayIndex = arrayIndex * 2;
+
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
+		{
+			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
+		}
+	}
+	__syncthreads();
+	arrayIndex += 1;
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
+		{
+			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
+		}
+	}
+	__syncthreads();
+	arrayIndex -= 1;
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
+		{
+			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
+		}
+	}
+	__syncthreads();
 }
 
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit) {
@@ -117,24 +148,23 @@ __global__ void shellsort_int(int * d_int, size_t maxLimit, size_t num_arr, size
 	if (arrayIndex >= maxLimit)
 		return;
 
-	d_xtra_int[calcIndex] = d_int[arrayIndex];
+	d_xtra_int[calcIndex] = d_int[arrayIndex];	
+}
 
-	
-	if (d_xtra_int[calcIndex] == 0) {
-		printf("Value of %llu is %d is stored as %d at %llu\n", arrayIndex, d_int[arrayIndex], d_xtra_int[calcIndex], calcIndex);
-	}
-	
-	if (d_int[arrayIndex] == 0) {
-		printf("Value of %llu is %d is stored as %d at %llu\n", arrayIndex, d_int[arrayIndex], d_xtra_int[calcIndex], calcIndex);
-	}
+__global__ void shellsort_llong_front(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong)
+{
+	size_t arrayIndex;
+	int t_int;
+	size_t calcIndex;
 
-	if (arrayIndex / 2 == 131010) {
-		printf("Value of %llu is %d is stored as %d at %llu\n", arrayIndex, d_int[arrayIndex], d_xtra_int[calcIndex], calcIndex);
-	}
-	if ((calcIndex == 262020) || (calcIndex == 262021)) {
-		printf("Value of %llu is %d is stored as %d at %llu\n", arrayIndex, d_int[arrayIndex], d_xtra_int[calcIndex], calcIndex);
-	}
-	
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
+
+	if (arrayIndex >= maxLimit)
+		return;
+
+	d_xtra_llong[calcIndex] = d_llong[arrayIndex];
 }
 
 __global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int)
@@ -151,11 +181,22 @@ __global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr,
 		return;
 
 	d_int[arrayIndex] = d_xtra_int[calcIndex];
+}
 
-//	if (arrayIndex / 2 == 1) {
-//		printf("Value of %llu is %d is stored as %d at %llu\n", arrayIndex, d_int[arrayIndex], d_xtra_int[calcIndex], calcIndex);
-//	}
+__global__ void shellsort_llong_back(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong)
+{
+	size_t arrayIndex;
+	int t_int;
+	size_t calcIndex;
 
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
+
+	if (arrayIndex >= maxLimit)
+		return;
+
+	d_llong[arrayIndex] = d_xtra_llong[calcIndex];
 }
 
 __global__ void shellsort_llong(long long * d_llong, size_t maxLimit)

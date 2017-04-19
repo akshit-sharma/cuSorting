@@ -8,6 +8,7 @@ class CuBiggerSource : public BiggerSource
 	int * d_int;
 	int * d_xtra_int;
 	long long * d_llong;
+	long long * d_xtra_llong;
 
 	void write_file(const char * file_name, 
 		ResultsDataStructure * resultsDataStructure);
