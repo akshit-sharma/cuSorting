@@ -3,6 +3,10 @@
 #ifndef H_GLOBALHEADER_H
 #define H_GLOBALHEADER_H
 
+#include<iostream>
+#include<fstream>
+
+
 #ifdef _MSC_VER
 
 #define printf_stream(stream,fixed_string,...)\

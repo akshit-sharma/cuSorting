@@ -21,6 +21,8 @@ BiggerSource bigsource;
 CuSource cuSource;
 CuBiggerSource cuBiggerSource;
 
+FILE * fs;
+
 double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
 double memory_alloc_time;
@@ -78,17 +80,23 @@ void runSort(main_class * source_obj, int value)
 int main(int argc, char ** argv)
 {
 
-	if (argc != 4)
+	if (argc != 5)
 	{
 		perror("Invalid parameter given");
 		perror("Found parameter : " + argc);
-		perror("argv[1], argv[2] & argv[3] not supplied");
+		perror("argv[1], argv[2], argv[3] & argv[4] not supplied");
 		perror("argv[1] & argv[2] is the path of input file");
 		perror("argv[3] is the path of output file");
+		perror("argv[4] is the path of output folder");
 		exit(1);
 	}
 
+	std::string fileName;
 	bool hasCudaEnabledGPU = detectCudaEnabledGPU();
+
+	fileName = std::string(argv[4]);
+	fileName += "ProgramOutput.txt";
+	fs = fopen(fileName.c_str(),"w");
 
 	file_name_small = argv[1];
 	file_name_big = argv[2];
@@ -101,9 +109,11 @@ int main(int argc, char ** argv)
 	big_times = 0;
 
 
-	printf_stream(stdout, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+	printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
 		"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?" 
 	);
+
+	
 	
 	main_class * source_obj = &source;
 	main_class * big_source_obj = &bigsource;
@@ -127,23 +137,25 @@ int main(int argc, char ** argv)
 //	both_call_runsort_skip("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
 	
-//	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 10, "subjName", 11, "name", skip_shell_cpu, skip_shell_gpu);
 //	both_call_runsort_skip("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
-	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+//	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
 	
 	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
 //	both_call_runsort_skip("bubblesort", 16, "subjName", 17, "name", skip_bubble_cpu, skip_bubble_gpu);
 //	both_call_runsort_skip("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
 	call_runsort_results("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
 	
-	printf_stream(stdout, "\n");
+	printf_stream_file(stdout, fs, "\n");
 
-	printf_stream(stdout, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
-	printf_stream(stdout, "Avg big file read time %lf\n", (avg_read_times_big / big_times));
+	printf_stream_file(stdout, fs, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
+	printf_stream_file(stdout, fs, "Avg big file read time %lf\n", (avg_read_times_big / big_times));
 
-	printf_stream(stdout, "\n");
-	printf_stream(stdout, "\n");
+	printf_stream_file(stdout, fs, "\n");
+	printf_stream_file(stdout, fs, "\n");
+
+	fclose(fs);
 
 	return 0;
 	 
@@ -162,20 +174,21 @@ bool detectCudaEnabledGPU()
 
 	if (error_id != cudaSuccess)
 	{
-		printf("cudaGetDeviceCount returned %d\n-> %s\n", (int)error_id, cudaGetErrorString(error_id));
-		printf("Result = FAIL\n");
-		exit(EXIT_FAILURE);
+		printf_stream_file(stdout, fs, "cudaGetDeviceCount returned %d\n-> %s\n", (int)error_id, cudaGetErrorString(error_id));
+		printf_stream_file(stdout, fs, "Result = FAIL\n");
+		printf_stream_file(stdout, fs, "There are no available device(s) that support CUDA\n");
+		return false;
 	}
 
 	// This function call returns 0 if there are no CUDA capable devices.
 	if (deviceCount == 0)
 	{
-		printf("There are no available device(s) that support CUDA\n");
+		printf_stream_file(stdout, fs, "There are no available device(s) that support CUDA\n");
 		return false;
 	}
 	else
 	{
-		printf("Detected %d CUDA Capable device(s)\n", deviceCount);
+		printf_stream_file(stdout, fs, "Detected %d CUDA Capable device(s)\n", deviceCount);
 		
 		int dev = 0, driverVersion = 0, runtimeVersion = 0;
 
@@ -185,17 +198,17 @@ bool detectCudaEnabledGPU()
 		gpuErrchk(
 		cudaGetDeviceProperties(&deviceProp, dev));
 
-		printf("\nDevice %d: \"%s\"\n", dev, deviceProp.name);
+		printf_stream_file(stdout, fs, "\nDevice %d: \"%s\"\n", dev, deviceProp.name);
 
 		// Console log
 		gpuErrchk(
 		cudaDriverGetVersion(&driverVersion));
 		gpuErrchk(
 		cudaRuntimeGetVersion(&runtimeVersion));
-		printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
-		printf("  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
+		printf_stream_file(stdout, fs, "  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
+		printf_stream_file(stdout, fs, "  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
 
-		printf("\n\n");
+		printf_stream_file(stdout, fs, "\n\n");
 
 	}
 
