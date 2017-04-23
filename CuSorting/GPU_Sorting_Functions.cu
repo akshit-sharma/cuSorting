@@ -26,25 +26,20 @@ __global__ void bitonic_sort_llong_initMax(long long *dev_values)
 
 __global__ void bitonic_sort_int(int *dev_values, int j, int k)
 {
-	unsigned int i, ixj; /* Sorting partners: i and ixj */
+	unsigned int i, ixj;
 	i = threadIdx.x + blockDim.x * blockIdx.x;
 	ixj = i^j;
 
-	/* The threads with the lowest ids sort the array. */
 	if ((ixj) > i) {
 		if ((i&k) == 0) {
-			/* Sort ascending */
 			if (dev_values[i] > dev_values[ixj]) {
-				/* exchange(i,ixj); */
 				int temp = dev_values[i];
 				dev_values[i] = dev_values[ixj];
 				dev_values[ixj] = temp;
 			}
 		}
 		if ((i&k) != 0) {
-			/* Sort descending */
 			if (dev_values[i] < dev_values[ixj]) {
-				/* exchange(i,ixj); */
 				int temp = dev_values[i];
 				dev_values[i] = dev_values[ixj];
 				dev_values[ixj] = temp;
@@ -55,142 +50,26 @@ __global__ void bitonic_sort_int(int *dev_values, int j, int k)
 
 __global__ void bitonic_sort_llong(long long *dev_values, int j, int k)
 {
-	unsigned int i, ixj; /* Sorting partners: i and ixj */
+	unsigned int i, ixj; 
 	i = threadIdx.x + blockDim.x * blockIdx.x;
 	ixj = i^j;
 
-	/* The threads with the lowest ids sort the array. */
 	if ((ixj) > i) {
 		if ((i&k) == 0) {
-			/* Sort ascending */
 			if (dev_values[i] > dev_values[ixj]) {
-				/* exchange(i,ixj); */
 				long long temp = dev_values[i];
 				dev_values[i] = dev_values[ixj];
 				dev_values[ixj] = temp;
 			}
 		}
 		if ((i&k) != 0) {
-			/* Sort descending */
 			if (dev_values[i] < dev_values[ixj]) {
-				/* exchange(i,ixj); */
 				long long temp = dev_values[i];
 				dev_values[i] = dev_values[ixj];
 				dev_values[ixj] = temp;
 			}
 		}
 	}
-}
-
-
-__global__ void allOkay_shell(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_ans)
-{
-	size_t arrayIndex;
-
-	int t_int;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	arrayIndex = arrayIndex * 2;
-
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-		{
-			atomicAdd(d_ans, 1);
-			return;
-		}
-	}
-	__syncthreads();
-	arrayIndex += 1;
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-		{
-			atomicAdd(d_ans, 1);
-			return;
-		}
-	}
-	__syncthreads();
-	arrayIndex -= 1;
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-		{
-			atomicAdd(d_ans, 1);
-			return;
-		}
-	}
-	__syncthreads();
-
-}
-
-__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size)
-{
-	size_t arrayIndex;
-	
-	int t_int;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	arrayIndex = arrayIndex * 2;
-
-		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-			{
-				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
-			}
-		}
-		__syncthreads();
-		arrayIndex += 1;
-		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-			{
-				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
-			}
-		}
-		__syncthreads();
-		arrayIndex -= 1;
-		if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-			if (d_int[arrayIndex] > d_int[arrayIndex + 1])
-			{
-				SWAP(t_int, arrayIndex, arrayIndex + 1, d_int);
-			}
-		}
-		__syncthreads();
-		
-}
-
-__global__ void odd_even_sort_llong_xtra(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size)
-{
-	size_t arrayIndex;
-
-	long long t_llong;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	arrayIndex = arrayIndex * 2;
-
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
-		{
-			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
-		}
-	}
-	__syncthreads();
-	arrayIndex += 1;
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
-		{
-			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
-		}
-	}
-	__syncthreads();
-	arrayIndex -= 1;
-	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
-		if (d_llong[arrayIndex] > d_llong[arrayIndex + 1])
-		{
-			SWAP(t_llong, arrayIndex, arrayIndex + 1, d_llong);
-		}
-	}
-	__syncthreads();
 }
 
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit) {
@@ -244,91 +123,6 @@ __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit)
 		__syncthreads();
 	}
 }
-
-__global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit)
-{
-	//Function body
-
-}
-
-__global__ void shellsort_int(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int)
-{
-	size_t arrayIndex;
-	int t_int;
-	size_t calcIndex;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
-
-	if (arrayIndex >= maxLimit)
-		return;
-
-	d_xtra_int[calcIndex] = d_int[arrayIndex];	
-}
-
-__global__ void shellsort_llong_front(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong)
-{
-	size_t arrayIndex;
-	int t_int;
-	size_t calcIndex;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
-
-	if (arrayIndex >= maxLimit)
-		return;
-
-	d_xtra_llong[calcIndex] = d_llong[arrayIndex];
-}
-
-__global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int)
-{
-	size_t arrayIndex;
-	int t_int;
-	size_t calcIndex;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
-
-	if (arrayIndex >= maxLimit)
-		return;
-
-	d_int[arrayIndex] = d_xtra_int[calcIndex];
-}
-
-__global__ void shellsort_llong_back(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong)
-{
-	size_t arrayIndex;
-	int t_int;
-	size_t calcIndex;
-
-	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
-
-	calcIndex = ((arrayIndex % num_arr) * arr_size) + (arrayIndex / num_arr);
-
-	if (arrayIndex >= maxLimit)
-		return;
-
-	d_llong[arrayIndex] = d_xtra_llong[calcIndex];
-}
-
-__global__ void shellsort_llong(long long * d_llong, size_t maxLimit)
-{
-	//Function body
-
-}
-
-__global__ void shellsort_string(std::string * d_string, size_t maxLimit)
-{
-	//Function body
-
-}
-
-
-///=============FROM cdpSimpleQuicksort example===============///
 __device__ void selection_sort_int(int *data, size_t left, size_t right)
 {
 	for (int i = left; i <= right; ++i)
@@ -424,8 +218,6 @@ __global__  void quicksort_int(int *data, size_t left, size_t right, size_t dept
 	
 }
 
-
-///=============modified cdpSimpleQuicksort example===============///
 __device__ void selection_sort_llong(long long * data, size_t left, size_t right)
 {
 	for (size_t i = left; i <= right; ++i)
@@ -518,12 +310,5 @@ __global__ void quicksort_llong(long long * data, size_t left, size_t right, siz
 		quicksort_llong<<< 1, 1, 0, s1 >>>(data, nleft, right, depth + 1);
 		cudaStreamDestroy(s1);
 	}
-
-}
-
-
-__global__ void quicksort_string(std::string * d_string, size_t maxLimit)
-{
-	//Function body
 
 }

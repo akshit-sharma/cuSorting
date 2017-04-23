@@ -20,23 +20,8 @@ __global__ void bitonic_sort_int(int *dev_values, int j, int k);
 __global__ void bitonic_sort_llong_initMax(long long *dev_values);
 __global__ void bitonic_sort_llong(long long *dev_values, int j, int k);
 
-__global__ void allOkay_shell(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_ans);
-
-
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit);
 __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit);
-__global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit);
-
-__global__ void shellsort_int(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int);
-__global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size);
-__global__ void shellsort_int_back(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_xtra_int);
-
-__global__ void shellsort_llong_front(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong);
-__global__ void odd_even_sort_llong_xtra(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size);
-__global__ void shellsort_llong_back(long long * d_llong, size_t maxLimit, size_t num_arr, size_t arr_size, long long * d_xtra_llong);
-
-__global__ void shellsort_string(std::string * d_string, size_t maxLimit);
 
 __global__ void quicksort_int(int *data, size_t left, size_t right, size_t depth);
 __global__ void quicksort_llong(long long * data, size_t left, size_t right, size_t depth);
-__global__ void quicksort_string(std::string * d_string, size_t maxLimit);
