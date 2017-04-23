@@ -118,7 +118,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <PtxAsOptionV>true</PtxAsOptionV>
       <AdditionalOptions>-Wno-deprecated-gpu-targets %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Od</Optimization>
+      <Optimization>O2</Optimization>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,7 +142,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <PtxAsOptionV>true</PtxAsOptionV>
       <AdditionalOptions>-Wno-deprecated-gpu-targets %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Od</Optimization>
+      <Optimization>O2</Optimization>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,7 +166,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
-      <Optimization>Od</Optimization>
+      <Optimization>O2</Optimization>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <PtxAsOptionV>true</PtxAsOptionV>
       <AdditionalOptions>-Wno-deprecated-gpu-targets %(AdditionalOptions)</AdditionalOptions>
@@ -195,7 +195,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
-      <Optimization>Od</Optimization>
+      <Optimization>O2</Optimization>
       <PtxAsOptionV>true</PtxAsOptionV>
       <AdditionalOptions>-Wno-deprecated-gpu-targets %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>

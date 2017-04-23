@@ -29,6 +29,7 @@
 #define __launch_bounds__(a,b)
 void __syncthreads(void);
 void __threadfence(void);
+//void atomicAdd(int *, int);
 #endif
 
 #define MAX_DEPTH       16

@@ -2,11 +2,16 @@
 #include "BiggerSource.h"
 #include "cuRDStruct.h"
 
+#define THREADS 512 // 2^9
+#define BLOCKS 32768 // 2^15
+#define NUM_VALS THREADS*BLOCKS
+
 class CuBiggerSource : public BiggerSource
 {
 
 	int * d_int;
 	int * d_xtra_int;
+	int * d_ans;
 	long long * d_llong;
 	long long * d_xtra_llong;
 

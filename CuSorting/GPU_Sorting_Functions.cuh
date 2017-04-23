@@ -14,6 +14,15 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 	}
 }
 
+__global__ void bitonic_sort_int_initMax(int *dev_values);
+__global__ void bitonic_sort_int(int *dev_values, int j, int k);
+
+__global__ void bitonic_sort_llong_initMax(long long *dev_values);
+__global__ void bitonic_sort_llong(long long *dev_values, int j, int k);
+
+__global__ void allOkay_shell(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_ans);
+
+
 __global__ void odd_even_sort_int(int * d_int, size_t maxLimit);
 __global__ void odd_even_sort_llong(long long * d_llong, size_t maxLimit);
 __global__ void odd_even_sort_string(std::string * d_string, size_t maxLimit);

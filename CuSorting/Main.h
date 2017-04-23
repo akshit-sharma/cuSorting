@@ -36,6 +36,8 @@
 					post_sort_duration, memory_dealloc_time, BoolToCheck);									\
 	}
 
+
+
 #define call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 		runSort(cu_big_source_obj, big_number);																\
@@ -51,6 +53,8 @@
 		technique, "result", "cpu", memory_alloc_time, big_col, pre_sort_duration,							\
 		sort_duration, post_sort_duration, memory_dealloc_time, BoolToCheck);								\
 	}								
+
+
 
 #define both_call_runsort_skip(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 		call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu);	\

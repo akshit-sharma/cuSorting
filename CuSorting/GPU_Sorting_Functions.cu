@@ -6,6 +6,122 @@
 #include "SchemeDataStructure.h"
 #include "cuSource.h"
 
+__global__ void bitonic_sort_int_initMax(int *dev_values)
+{
+	size_t i;
+
+	i = threadIdx.x + blockDim.x * blockIdx.x;
+
+	dev_values[i] = INT_MAX;
+}
+
+__global__ void bitonic_sort_llong_initMax(long long *dev_values)
+{
+	size_t i;
+
+	i = threadIdx.x + blockDim.x * blockIdx.x;
+
+	dev_values[i] = LONG_MAX;
+}
+
+__global__ void bitonic_sort_int(int *dev_values, int j, int k)
+{
+	unsigned int i, ixj; /* Sorting partners: i and ixj */
+	i = threadIdx.x + blockDim.x * blockIdx.x;
+	ixj = i^j;
+
+	/* The threads with the lowest ids sort the array. */
+	if ((ixj) > i) {
+		if ((i&k) == 0) {
+			/* Sort ascending */
+			if (dev_values[i] > dev_values[ixj]) {
+				/* exchange(i,ixj); */
+				int temp = dev_values[i];
+				dev_values[i] = dev_values[ixj];
+				dev_values[ixj] = temp;
+			}
+		}
+		if ((i&k) != 0) {
+			/* Sort descending */
+			if (dev_values[i] < dev_values[ixj]) {
+				/* exchange(i,ixj); */
+				int temp = dev_values[i];
+				dev_values[i] = dev_values[ixj];
+				dev_values[ixj] = temp;
+			}
+		}
+	}
+}
+
+__global__ void bitonic_sort_llong(long long *dev_values, int j, int k)
+{
+	unsigned int i, ixj; /* Sorting partners: i and ixj */
+	i = threadIdx.x + blockDim.x * blockIdx.x;
+	ixj = i^j;
+
+	/* The threads with the lowest ids sort the array. */
+	if ((ixj) > i) {
+		if ((i&k) == 0) {
+			/* Sort ascending */
+			if (dev_values[i] > dev_values[ixj]) {
+				/* exchange(i,ixj); */
+				long long temp = dev_values[i];
+				dev_values[i] = dev_values[ixj];
+				dev_values[ixj] = temp;
+			}
+		}
+		if ((i&k) != 0) {
+			/* Sort descending */
+			if (dev_values[i] < dev_values[ixj]) {
+				/* exchange(i,ixj); */
+				long long temp = dev_values[i];
+				dev_values[i] = dev_values[ixj];
+				dev_values[ixj] = temp;
+			}
+		}
+	}
+}
+
+
+__global__ void allOkay_shell(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size, int * d_ans)
+{
+	size_t arrayIndex;
+
+	int t_int;
+
+	arrayIndex = threadIdx.x + blockIdx.x*blockDim.x;
+
+	arrayIndex = arrayIndex * 2;
+
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+		{
+			atomicAdd(d_ans, 1);
+			return;
+		}
+	}
+	__syncthreads();
+	arrayIndex += 1;
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+		{
+			atomicAdd(d_ans, 1);
+			return;
+		}
+	}
+	__syncthreads();
+	arrayIndex -= 1;
+	if (((arrayIndex + 1) < maxLimit) && ((arrayIndex + 1) % arr_size != 0)) {
+		if (d_int[arrayIndex] > d_int[arrayIndex + 1])
+		{
+			atomicAdd(d_ans, 1);
+			return;
+		}
+	}
+	__syncthreads();
+
+}
+
 __global__ void odd_even_sort_int_xtra(int * d_int, size_t maxLimit, size_t num_arr, size_t arr_size)
 {
 	size_t arrayIndex;

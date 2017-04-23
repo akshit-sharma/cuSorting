@@ -7,6 +7,10 @@
 
 #include "time.h"
 
+#define THREADS 512 // 2^9
+#define BLOCKS 32768 // 2^15
+#define NUM_VALS THREADS*BLOCKS
+
 #pragma once
 class Source : public virtual main_class
 {
