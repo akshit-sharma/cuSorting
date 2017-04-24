@@ -29,6 +29,9 @@ private:
 	void shellsort(int* toSort, size_t low, size_t high);
 	void bubblesort(std::string* toSort, size_t low, size_t high);
 	void bubblesort(int* toSort, size_t low, size_t high);
+	void compAndSwap(int* a, int i, int j, int dir);
+	void bitonicMerge(int* a, int low, int cnt, int dir);
+	void bitonicSort(int* a, int low, int cnt, int dir);
 
 protected:
 
@@ -54,6 +57,7 @@ protected:
 	size_t maxLength_inti, maxLength_subj;
 
 	size_t rows;
+	size_t max2Rows;
 
 	clock_t startTimer();
 	clock_t endTimer();

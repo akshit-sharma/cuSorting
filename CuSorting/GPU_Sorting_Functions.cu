@@ -6,22 +6,26 @@
 #include "SchemeDataStructure.h"
 #include "cuSource.h"
 
-__global__ void bitonic_sort_int_initMax(int *dev_values)
+__global__ void bitonic_sort_int_initMax(int *dev_values, size_t least_index)
 {
 	size_t i;
 
 	i = threadIdx.x + blockDim.x * blockIdx.x;
 
-	dev_values[i] = INT_MAX;
+	if(i>=least_index)
+		dev_values[i] = INT_MAX;
+
 }
 
-__global__ void bitonic_sort_llong_initMax(long long *dev_values)
+__global__ void bitonic_sort_llong_initMax(long long *dev_values, size_t least_index)
 {
 	size_t i;
 
 	i = threadIdx.x + blockDim.x * blockIdx.x;
 
-	dev_values[i] = LONG_MAX;
+	if(i>=least_index)
+		dev_values[i] = LONG_MAX;
+
 }
 
 __global__ void bitonic_sort_int(int *dev_values, int j, int k)

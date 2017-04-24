@@ -12,6 +12,7 @@ int BiggerSource::init_num = 0;
 double BiggerSource::preSorting()
 {
 	clock_t start;
+	size_t index;
 	start = startTimer();
 
 	switch (column_decide % 3)
@@ -20,10 +21,20 @@ double BiggerSource::preSorting()
 	case 0:
 		sorted_col_long = rollnumber;
 		sorted_col_type = longe;
+
+		if (column_decide % 3 == 0)
+			for (index = rows; index < max2Rows; index++)
+				this->rollnumber[index] = LONG_MAX;
+
 		break;
 	case 1:
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
+
+		if (column_decide % 3 == 1)
+			for (index = rows; index < max2Rows; index++)
+				this->paper_id[index] = INT_MAX;
+
 		break;
 	case 2:
 		sorted_col_string = name;
@@ -54,13 +65,13 @@ double BiggerSource::sort()
 		quicksort(rollnumber, 0, rows - 1);
 		break;
 	case 4:
-		shellsort(paper_id, 0, rows - 1);
+		bitonicSort(paper_id, 0, max2Rows, 1);
 		break;
 	case 5:
 		shellsort(name, 0, rows - 1);
 		break;
 	case 6:
-		shellsort(rollnumber, 0, rows - 1);
+		bitonicSort(rollnumber, 0, max2Rows, 1);
 		break;
 	case 7:
 		bubblesort(paper_id, 0, rows - 1);
@@ -207,47 +218,11 @@ double BiggerSource::readFile(const char* file_name)
 				if(column_decide%3==2)
 					this->name[line_number-1] = std::string(name);
 
-				{
-					if (overpassed_name != NULL && overpassed_name == false)
-					{
-						if (length_name < (std::numeric_limits<size_t>::max() >> 5))
-						{
-							printf_stream(stderr, "Not good");
-							overpassed_name = true;
-						}
-					}
-
-					if (name.length() > maxLength_name) {
-						maxLength_name = name.length();
-					}
-
-					length_name += std::string(name).length() + 1;
-
-					if (overpassed_name == NULL || overpassed_name == true)
-					{
-						if (length_name > (std::numeric_limits<size_t>::max() >> 5))
-						{
-							overpassed_name = false;
-						}
-					}
-				}
-
             }
 
             line_number++;
 
     }
-
-
-	// Value is 40
-//	printf_stream(stdout, "Max length of name is %zu \n", maxLength_name);
-
-	// Value is 45340947 Windows
-	// 42041167 ubuntu
-//	if (overpassed_name != NULL)
-//		printf_stream(stdout, "Value of name length %zu & bool = %d \n", length_name, overpassed_name);
-//	else
-//		printf_stream(stdout, "Value of name length %zu \n", length_name);
 
 
     file.close();
@@ -333,9 +308,18 @@ double BiggerSource::MemAllo(const char* file_name)
 
     size_t colmns = 18;
     rows = getFileLines(file_name);
+	
+	size_t temp_rows = rows;
+	size_t targetlevel = 0;
+	while (temp_rows >>= 1) ++targetlevel;
 
-	paper_id = new int[rows];
-    rollnumber = new long long[rows];
+	++targetlevel;
+	max2Rows = 1 << targetlevel;
+
+	//printf_stream(stdout, "Value is %llu and %llu", rows, max2Rows);
+
+	paper_id = new int[max2Rows];
+    rollnumber = new long long[max2Rows];
     name = new std::string[rows];
 
 	length_name = 0;
@@ -799,4 +783,71 @@ double BiggerSource::getTimeElapsed(std::clock_t start, std::clock_t end)
 {
 	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 }
+
+void BiggerSource::compAndSwap(int* a, int i, int j, int dir)
+{
+	if (dir == (a[i] > a[j]))
+		swap(i, j);
+}
+
+void BiggerSource::bitonicMerge(int* a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+		for (int i = low; i<low + k; i++)
+			compAndSwap(a, i, i + k, dir);
+		bitonicMerge(a, low, k, dir);
+		bitonicMerge(a, low + k, k, dir);
+	}
+}
+
+void BiggerSource::bitonicSort(int* a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+
+		bitonicSort(a, low, k, 1);
+
+		bitonicSort(a, low + k, k, 0);
+
+		bitonicMerge(a, low, cnt, dir);
+	}
+}
+
+void BiggerSource::compAndSwap(long long* a, int i, int j, int dir)
+{
+	if (dir == (a[i] > a[j]))
+		swap(i, j);
+}
+
+void BiggerSource::bitonicMerge(long long *a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+		for (int i = low; i<low + k; i++)
+			compAndSwap(a, i, i + k, dir);
+		bitonicMerge(a, low, k, dir);
+		bitonicMerge(a, low + k, k, dir);
+	}
+}
+
+void BiggerSource::bitonicSort(long long* a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+
+		bitonicSort(a, low, k, 1);
+
+		bitonicSort(a, low + k, k, 0);
+
+		bitonicMerge(a, low, cnt, dir);
+	}
+}
+
+
+
 

@@ -12,6 +12,7 @@ int Source::init_num = 0;
 double Source::preSorting() {
 
 	clock_t start;
+	size_t index;
 	start = startTimer();
 
 	switch (column_decide%3)
@@ -24,6 +25,10 @@ double Source::preSorting() {
 	case 1:
 		sorted_col_int = paper_id;
 		sorted_col_type = inte;
+
+		if (column_decide % 3 == 1)
+			for (index = rows; index < max2Rows; index++)
+				this->paper_id[index] = INT_MAX;
 		break;
 	case 2:
 		sorted_col_string = subject_name;
@@ -54,7 +59,7 @@ double Source::sort()
 		quicksort(institution_name, 0, rows - 1);
 		break;
 	case 4:
-		shellsort(paper_id, 0, rows - 1);
+		bitonicSort(paper_id, 0, max2Rows, 1);
 		break;
 	case 5:
 		shellsort(subject_name, 0, rows - 1);
@@ -209,79 +214,15 @@ double Source::readFile(const char* file_name)
             
 			if(column_decide%3==2)
         		this->subject_name[line_number - 1] = std::string(subject_name);
-
-
-			{
-				if (overpassed_inst != NULL && overpassed_inst == false)
-				{
-					if (length_institution_name < (std::numeric_limits<size_t>::max() >> 5))
-					{
-						printf_stream(stderr, "Not good");
-						overpassed_inst = true;
-					}
-				}
-				if (overpassed_subj != NULL && overpassed_subj == false)
-				{
-					if (length_institution_name < (std::numeric_limits<size_t>::max() >> 5))
-					{
-						printf_stream(stderr, "Not good");
-						overpassed_subj = true;
-					}
-				}
-				
-				if (institution_name.length() > maxLength_inti) {
-					maxLength_inti = institution_name.length();
-				}
-				if (subject_name.length() > maxLength_subj) {
-					maxLength_subj = subject_name.length();
-				}
-
-				length_institution_name += std::string(institution_name).length() + 1;
-				length_subject_name += std::string(subject_name).length() + 1;
-
-				if (overpassed_inst == NULL || overpassed_inst == true)
-				{
-					if (length_institution_name > (std::numeric_limits<size_t>::max() >> 5))
-					{
-						overpassed_inst = false;
-					}
-				}
-				if (overpassed_subj == NULL || overpassed_subj == true)
-				{
-					if (length_institution_name > (std::numeric_limits<size_t>::max() >> 5))
-					{
-						overpassed_inst = false;
-					}
-				}
-			}
-
+			
         }
 
 		line_number++;
 	}
 
-	// Value is 102
-//	printf_stream(stdout, "Max length of inst. is %zu \n", maxLength_inti);
-	
-	// Value is 114
-//	printf_stream(stdout, "Max length of subj. is %zu \n", maxLength_subj);
-
-	// Value is 11330242 Windows
-	// 10666951 ubuntu
-//	if(overpassed_inst != NULL)
-//		printf_stream(stdout, "Value of inst. length %zu & bool = %d \n", length_institution_name, overpassed_inst);
-//	else
-//		printf_stream(stdout, "Value of inst. length %zu \n", length_institution_name);
-	
-	// Value is 6812514 Windows
-	// 6437896 ubuntu
-//	if(overpassed_subj != NULL)
-//		printf_stream(stdout, "Value of subj. length %zu & bool = %d \n", length_subject_name, overpassed_subj);
-//	else
-//		printf_stream(stdout, "Value of subj. length %zu \n", length_subject_name);
-
 	file.close();
 
+		
 	return getTimeElapsed(start, endTimer());
 }
 
@@ -363,7 +304,14 @@ double Source::MemAllo(const char* file_name)
 	size_t colmns = 21;
 	rows = getFileLines(file_name);
 
-	paper_id = new int[rows];
+	size_t temp_rows = rows;
+	size_t targetlevel = 0;
+	while (temp_rows >>= 1) ++targetlevel;
+
+	++targetlevel;
+	max2Rows = 1 << targetlevel;
+
+	paper_id = new int[max2Rows];
 	institution_name = new std::string[rows];
 	subject_name = new std::string[rows];
 	
@@ -728,5 +676,38 @@ std::clock_t Source::endTimer()
 double Source::getTimeElapsed(std::clock_t start, std::clock_t end)
 {
 	return (end - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
+
+void Source::compAndSwap(int* a, int i, int j, int dir)
+{
+	int t_int;
+	if (dir == (a[i] > a[j]))
+		swap(i, j);
+}
+
+void Source::bitonicMerge(int* a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+		for (int i = low; i<low + k; i++)
+			compAndSwap(a, i, i + k, dir);
+		bitonicMerge(a, low, k, dir);
+		bitonicMerge(a, low + k, k, dir);
+	}
+}
+
+void Source::bitonicSort(int* a, int low, int cnt, int dir)
+{
+	if (cnt>1)
+	{
+		int k = cnt / 2;
+
+		bitonicSort(a, low, k, 1);
+
+		bitonicSort(a, low + k, k, 0);
+
+		bitonicMerge(a, low, cnt, dir);
+	}
 }
 

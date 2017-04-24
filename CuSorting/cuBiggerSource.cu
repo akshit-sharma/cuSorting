@@ -124,30 +124,14 @@ double CuBiggerSource::MemAllo(const char* file_name)
 	switch (column_decide % 3)
 	{
 	case 0:
-		if (((column_decide - 1) / 3) == 1)
-		{
-			gpuErrchk(
-				cudaMalloc((void **)&d_llong, NUM_VALS * sizeof(long long))
-			);
-		}
-		else {
-			gpuErrchk(
-				cudaMalloc((void **)&d_llong, rows * sizeof(long long))
-			);
-		}
+		gpuErrchk(
+			cudaMalloc((void **)&d_llong, NUM_VALS * sizeof(long long))
+		);
 		break;
 	case 1:
-		if (((column_decide - 1) / 3) == 1)
-		{
-			gpuErrchk(
-				cudaMalloc((void **)&d_int, NUM_VALS * sizeof(int))
-			);
-		}
-		else {
-			gpuErrchk(
-				cudaMalloc((void **)&d_int, rows * sizeof(int))
-			);
-		}
+		gpuErrchk(
+			cudaMalloc((void **)&d_int, NUM_VALS * sizeof(int))
+		);
 		break;
 	case 2:
 		// NOT READY
@@ -182,7 +166,7 @@ double CuBiggerSource::preSorting()
 	{
 	case 0:
 		if (((column_decide - 1) / 3) == 1)
-			bitonic_sort_llong_initMax <<<BLOCKS, THREADS >>>(d_llong);
+			bitonic_sort_llong_initMax <<<BLOCKS, THREADS >>>(d_llong, rows);
 		gpuErrchk(
 			cudaMemcpy(d_llong, rollnumber,
 				rows * sizeof(long long),
@@ -192,7 +176,7 @@ double CuBiggerSource::preSorting()
 		break;
 	case 1:
 		if (((column_decide - 1) / 3) == 1)
-			bitonic_sort_int_initMax << <BLOCKS, THREADS >> >(d_int);
+			bitonic_sort_int_initMax << <BLOCKS, THREADS >> >(d_int, rows);
 		gpuErrchk(
 			cudaMemcpy(d_int, paper_id,
 				rows * sizeof(int),

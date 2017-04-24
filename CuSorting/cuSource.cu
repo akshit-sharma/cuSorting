@@ -143,7 +143,7 @@ double CuSource::preSorting()
 		break;
 	case 1:
 		if (((column_decide - 1) / 3) == 1)
-			bitonic_sort_int_initMax<<<BLOCKS, THREADS>>>(d_int);
+			bitonic_sort_int_initMax<<<BLOCKS, THREADS>>>(d_int, rows);
 		gpuErrchk(
 			cudaMemcpy(d_int, paper_id,
 				rows * sizeof(int),
