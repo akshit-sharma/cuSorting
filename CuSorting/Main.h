@@ -10,7 +10,8 @@
 
 #define printf_stream_file(stream_1,stream_2,fixed_string,...)\
 		printf_stream(stream_1,fixed_string,##__VA_ARGS__);	\
-		printf_stream(stream_2,fixed_string,##__VA_ARGS__);
+		printf_stream(stream_2,fixed_string,##__VA_ARGS__);	\
+		fflush(stream_2);
 
 #else
 

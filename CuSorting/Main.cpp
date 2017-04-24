@@ -134,13 +134,13 @@ int main(int argc, char ** argv)
 
 	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
 	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
-	
+
 	both_call_runsort_skip("shellsort", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
 	call_runsort_results("shellsort", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
-	
+
 	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
 	call_runsort_results("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
-	
+
 	printf_stream_file(stdout, fs, "\n");
 
 	printf_stream_file(stdout, fs, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
