@@ -30,17 +30,17 @@
 #define call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 			runSort(cu_source_obj, small_number);															\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"									\
-															" | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
+	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
+															" | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",	\
 		technique, "scheme", "gpu", memory_alloc_time, small_col, pre_sort_duration,						\
-		sort_duration, post_sort_duration, memory_dealloc_time, BoolToCheck);								\
+		sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);					\
 	}																										\
 	if(!skip_cpu){																							\
 				runSort(source_obj, small_number);															\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"											\
-													" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
+	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
+													" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",		\
 		technique, "scheme", "cpu", memory_alloc_time, small_col, pre_sort_duration, sort_duration,			\
-					post_sort_duration, memory_dealloc_time, BoolToCheck);									\
+					post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);						\
 	}
 
 
@@ -48,17 +48,17 @@
 #define call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 		runSort(cu_big_source_obj, big_number);																\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"											\
-														" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %8s \n",	\
+	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
+														" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",	\
 					technique, "result", "gpu", memory_alloc_time, big_col, pre_sort_duration,				\
-					sort_duration, post_sort_duration, memory_dealloc_time, BoolToCheck);					\
+					sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);		\
 	}																										\
 	if(!skip_cpu){																							\
 				runSort(big_source_obj, big_number);														\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"									\
-															" | %10.5lf | %10.5lf | %10.5lf | %8s \n",		\
+	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
+															" | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",		\
 		technique, "result", "cpu", memory_alloc_time, big_col, pre_sort_duration,							\
-		sort_duration, post_sort_duration, memory_dealloc_time, BoolToCheck);								\
+		sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);					\
 	}								
 
 
@@ -109,6 +109,7 @@ public:
 	virtual void setRows(size_t size) = 0;
 	virtual void selectColumn(int column) = 0;
 	virtual double MemAllo(const char* file_name) = 0;
+	virtual size_t getRowsCount() = 0;
 	virtual double readFile(const char * file_name) = 0;
 	virtual double preSorting() = 0;
 	virtual double sort() = 0;

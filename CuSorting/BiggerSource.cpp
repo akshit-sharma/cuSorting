@@ -311,6 +311,11 @@ void BiggerSource::setRows(size_t size)
 	this->rows = size;
 }
 
+size_t BiggerSource::getRowsCount()
+{
+	return this->rows;
+}
+
 double BiggerSource::MemAllo(const char* file_name)
 {
 	clock_t start;

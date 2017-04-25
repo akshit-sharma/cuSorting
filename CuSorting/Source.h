@@ -67,6 +67,7 @@ public:
 	virtual void setRows(size_t size);
 	virtual void selectColumn(int column);
 	virtual double MemAllo(const char* file_name);
+	virtual size_t getRowsCount();
 	virtual double readFile(const char * file_name);
 	virtual double preSorting();
 	virtual double sort();

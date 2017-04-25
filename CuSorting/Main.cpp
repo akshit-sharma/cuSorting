@@ -29,6 +29,8 @@ FILE * database_file;
 int runFileCount;
 int runStatusCount;
 
+size_t rowsCount;
+
 double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
 double memory_alloc_time;
@@ -46,7 +48,6 @@ const char * output_file_name;
 
 void runSort(main_class * source_obj, int value)
 {
-		
 	source_obj->selectColumn(value / 2);
 
 	source_obj->setRows(runFileCount*5);
@@ -56,6 +57,8 @@ void runSort(main_class * source_obj, int value)
 	else
 		memory_alloc_time = source_obj->MemAllo(file_name_big);
 	
+	rowsCount = source_obj->getRowsCount();
+
 	if(!skip_input){
 		if(value % 2 == 0)
 			avg_read_times_small += source_obj->readFile(file_name_small);
@@ -163,14 +166,14 @@ int main(int argc, char ** argv)
 
 	if (runFileCount == 0 && runStatusCount == 0)
 	{
-		printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
-			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?"
+		printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "RowsCount", "Correct?"
 		);
 	}
 	else
 	{
-		printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
-			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?"
+		printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "RowsCount", "Correct?"
 		);
 	}
 	
