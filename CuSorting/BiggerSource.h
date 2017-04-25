@@ -70,6 +70,7 @@ protected:
 
 
 public:
+	virtual void setRows(size_t size);
 	virtual void selectColumn(int column);
 	virtual double MemAllo(const char* file_name);
 	virtual double readFile(const char * file_name);

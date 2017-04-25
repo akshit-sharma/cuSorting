@@ -151,6 +151,10 @@ double Source::readFile(const char* file_name)
 	{
 		category = 0;
 		index = 0;
+		
+		if (line_number >= rows)
+			break;
+
 		for (char* buffer_iter = line;
 		     *buffer_iter != '\0'; ++buffer_iter)
 		{
@@ -294,6 +298,12 @@ double Source::print_table(const char* file_name)
 void Source::selectColumn(int column)
 {
 	this->column_decide = column;
+	this->rows = 0;
+}
+
+void Source::setRows(size_t size)
+{
+	this->rows = size;
 }
 
 double Source::MemAllo(const char* file_name)
@@ -302,7 +312,15 @@ double Source::MemAllo(const char* file_name)
 	start = startTimer();
 
 	size_t colmns = 21;
-	rows = getFileLines(file_name);
+
+	if(rows==0)
+		rows = getFileLines(file_name);
+	else {
+		size_t temp;
+		temp = rows;
+		rows = getFileLines(file_name);
+		rows = (rows * temp) / 200;
+	}
 
 	size_t temp_rows = rows;
 	size_t targetlevel = 0;

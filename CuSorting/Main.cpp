@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
+#include <algorithm> 
 
 #include <stdio.h>
 
@@ -22,6 +23,11 @@ CuSource cuSource;
 CuBiggerSource cuBiggerSource;
 
 FILE * fs;
+FILE * status_file;
+FILE * database_file;
+
+int runFileCount;
+int runStatusCount;
 
 double small_times, big_times;
 double avg_read_times_small, avg_read_times_big;
@@ -40,8 +46,10 @@ const char * output_file_name;
 
 void runSort(main_class * source_obj, int value)
 {
-	
+		
 	source_obj->selectColumn(value / 2);
+
+	source_obj->setRows(runFileCount*5);
 
 	if (value % 2 == 0)
 		memory_alloc_time = source_obj->MemAllo(file_name_small);
@@ -92,8 +100,29 @@ int main(int argc, char ** argv)
 	}
 
 	std::string fileName;
+
+	runFileCount = -1;
+	runStatusCount = -1;
+
 	fileName = std::string(argv[4]);
-	fileName += "ProgramOutput.txt";
+	fileName += "Status.txt";
+	status_file = fopen(fileName.c_str(), "r");
+
+	fscanf(status_file, "%d", &runFileCount);
+	fscanf(status_file, "%d", &runStatusCount);
+	fclose(status_file);
+
+	if (runFileCount > 39)
+	{
+		exit(127);
+	}
+	
+	fileName = std::string(argv[4]);
+	fileName += "ProgramOutput-";
+	fileName += std::to_string(runFileCount);
+	fileName += "-";
+	fileName += std::to_string(runStatusCount);
+	fileName += ".txt";
 	fs = fopen(fileName.c_str(), "w");
 
 	bool hasCudaEnabledGPU = detectCudaEnabledGPU();
@@ -109,11 +138,6 @@ int main(int argc, char ** argv)
 	big_times = 0;
 
 
-	printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
-		"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?" 
-	);
-
-	
 	
 	main_class * source_obj = &source;
 	main_class * big_source_obj = &bigsource;
@@ -132,16 +156,77 @@ int main(int argc, char ** argv)
 	sort_small = &f1;
 	sort_big = &f2;
 
-	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
-	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
+	fileName = std::string(argv[4]);
+	fileName += "OutputDataset";
+	fileName += ".csv";
+	database_file = fopen(fileName.c_str(), "a");
 
-	both_call_runsort_skip("bitonic", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
-	call_runsort_results("bitonic", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+	if (runFileCount == 0 && runStatusCount == 0)
+	{
+		printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?"
+		);
+	}
+	else
+	{
+		printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "Correct?"
+		);
+	}
+	
+	switch (runStatusCount)
+	{
+	case 0:		
+		runFileCount++;
+		call_runsort_scheme("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
+		break;
+	case 1:
+		call_runsort_results("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
+		break;
+	case 2:
+		call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
+		break;
+	case 3:
+		call_runsort_scheme("bitonic", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+		break;
+	case 4:
+		call_runsort_results("bitonic", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+		break;
+	case 5:
+		call_runsort_results("bitonic", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+		break;
+	default:
+		break;
+	}
 
-	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
-	call_runsort_results("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
+	fflush(database_file);
+	fclose(database_file);
+
+	runStatusCount++;
+
+	if (runStatusCount > 5)
+		runStatusCount = 0;
+
+
+//	both_call_runsort_skip("quicksort", 2, "paper_id", 3, "paper_id", skip_quick_cpu, skip_quick_gpu);
+//	call_runsort_results("quicksort", 6, "InstiName", 7, "rollnum.", skip_quick_cpu, skip_quick_gpu);
+
+//	both_call_runsort_skip("bitonic", 8, "paper_id", 9, "paper_id", skip_shell_cpu, skip_shell_gpu);
+//	call_runsort_results("bitonic", 12, "InstiName", 13, "rollnum.", skip_shell_cpu, skip_shell_gpu);
+
+//	call_runsort_scheme("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
+//	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
+//	call_runsort_results("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
 
 	printf_stream_file(stdout, fs, "\n");
+
+	fileName = std::string(argv[4]);
+	fileName += "Status.txt";
+	status_file = fopen(fileName.c_str(), "w");
+
+	printf_stream(status_file, "%d %d", runFileCount, runStatusCount);
+	fflush(status_file);
+	fclose(status_file);
 
 	printf_stream_file(stdout, fs, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
 	printf_stream_file(stdout, fs, "Avg big file read time %lf\n", (avg_read_times_big / big_times));

@@ -154,6 +154,10 @@ double BiggerSource::readFile(const char* file_name)
     while(file.getline(line, 512, '\n')){
         category = 0;
         index = 0;
+
+		if (line_number >= rows)
+			break;
+
         for(char * buffer_iter = line;
             *buffer_iter != '\0'; ++buffer_iter){
                 if(*buffer_iter == '\n')
@@ -299,6 +303,12 @@ double BiggerSource::print_table(const char * file_name)
 void BiggerSource::selectColumn(int column)
 {
 	this->column_decide = column;
+	this->rows = 0;
+}
+
+void BiggerSource::setRows(size_t size)
+{
+	this->rows = size;
 }
 
 double BiggerSource::MemAllo(const char* file_name)
@@ -307,7 +317,16 @@ double BiggerSource::MemAllo(const char* file_name)
 	start = startTimer();
 
     size_t colmns = 18;
-    rows = getFileLines(file_name);
+
+
+	if (rows == 0)
+		rows = getFileLines(file_name);
+	else {
+		size_t temp;
+		temp = rows;
+		rows = getFileLines(file_name);
+		rows = (rows * temp) / 200;
+	}
 	
 	size_t temp_rows = rows;
 	size_t targetlevel = 0;
