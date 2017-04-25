@@ -22,7 +22,6 @@ BiggerSource bigsource;
 CuSource cuSource;
 CuBiggerSource cuBiggerSource;
 
-FILE * fs;
 FILE * status_file;
 FILE * database_file;
 
@@ -120,14 +119,6 @@ int main(int argc, char ** argv)
 		exit(127);
 	}
 	
-	fileName = std::string(argv[4]);
-	fileName += "ProgramOutput-";
-	fileName += std::to_string(runFileCount);
-	fileName += "-";
-	fileName += std::to_string(runStatusCount);
-	fileName += ".txt";
-	fs = fopen(fileName.c_str(), "w");
-
 	bool hasCudaEnabledGPU = detectCudaEnabledGPU();
 
 	file_name_small = argv[1];
@@ -166,13 +157,13 @@ int main(int argc, char ** argv)
 
 	if (runFileCount == 0 && runStatusCount == 0)
 	{
-		printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+		printf_stream_excel(stdout, database_file, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
 			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "RowsCount", "Correct?"
 		);
 	}
 	else
 	{
-		printf_stream_file(stdout, fs, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
+		printf_stream(stdout, " %10s | %7s | %4s | %10s | %10s | %10s | %10s | %10s | %10s | %10s | %8s \n",
 			"technique", "dataset", "ALU", "memAlloc", "colData", "PreEvent", "timeTaken", "PostEvent", "memDealloc", "RowsCount", "Correct?"
 		);
 	}
@@ -221,7 +212,7 @@ int main(int argc, char ** argv)
 //	both_call_runsort_skip("bubblesort", 14, "paper_id", 15, "paper_id", skip_bubble_cpu, skip_bubble_gpu);
 //	call_runsort_results("bubblesort", 18, "InstiName", 19, "rollnum.", skip_bubble_cpu, skip_bubble_gpu);
 
-	printf_stream_file(stdout, fs, "\n");
+	printf_stream(stdout, "\n");
 
 	fileName = std::string(argv[4]);
 	fileName += "Status.txt";
@@ -231,14 +222,12 @@ int main(int argc, char ** argv)
 	fflush(status_file);
 	fclose(status_file);
 
-	printf_stream_file(stdout, fs, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
-	printf_stream_file(stdout, fs, "Avg big file read time %lf\n", (avg_read_times_big / big_times));
+	printf_stream(stdout, "Avg small file read time %lf\n", (avg_read_times_small / small_times));
+	printf_stream(stdout, "Avg big file read time %lf\n", (avg_read_times_big / big_times));
 
-	printf_stream_file(stdout, fs, "\n");
-	printf_stream_file(stdout, fs, "\n");
-
-	fclose(fs);
-
+	printf_stream(stdout, "\n");
+	printf_stream(stdout, "\n");
+	
 	return 0;
 	 
 
@@ -256,21 +245,21 @@ bool detectCudaEnabledGPU()
 
 	if (error_id != cudaSuccess)
 	{
-		printf_stream_file(stdout, fs, "cudaGetDeviceCount returned %d\n-> %s\n", (int)error_id, cudaGetErrorString(error_id));
-		printf_stream_file(stdout, fs, "Result = FAIL\n");
-		printf_stream_file(stdout, fs, "There are no available device(s) that support CUDA\n");
+		printf_stream(stdout, "cudaGetDeviceCount returned %d\n-> %s\n", (int)error_id, cudaGetErrorString(error_id));
+		printf_stream(stdout, "Result = FAIL\n");
+		printf_stream(stdout, "There are no available device(s) that support CUDA\n");
 		return false;
 	}
 
 	// This function call returns 0 if there are no CUDA capable devices.
 	if (deviceCount == 0)
 	{
-		printf_stream_file(stdout, fs, "There are no available device(s) that support CUDA\n");
+		printf_stream(stdout, "There are no available device(s) that support CUDA\n");
 		return false;
 	}
 	else
 	{
-		printf_stream_file(stdout, fs, "Detected %d CUDA Capable device(s)\n", deviceCount);
+		printf_stream(stdout, "Detected %d CUDA Capable device(s)\n", deviceCount);
 		
 		int dev = 0, driverVersion = 0, runtimeVersion = 0;
 
@@ -280,17 +269,17 @@ bool detectCudaEnabledGPU()
 		gpuErrchk(
 		cudaGetDeviceProperties(&deviceProp, dev));
 
-		printf_stream_file(stdout, fs, "\nDevice %d: \"%s\"\n", dev, deviceProp.name);
+		printf_stream(stdout, "\nDevice %d: \"%s\"\n", dev, deviceProp.name);
 
 		// Console log
 		gpuErrchk(
 		cudaDriverGetVersion(&driverVersion));
 		gpuErrchk(
 		cudaRuntimeGetVersion(&runtimeVersion));
-		printf_stream_file(stdout, fs, "  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
-		printf_stream_file(stdout, fs, "  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
+		printf_stream(stdout, "  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion / 1000, (driverVersion % 100) / 10, runtimeVersion / 1000, (runtimeVersion % 100) / 10);
+		printf_stream(stdout, "  CUDA Capability Major/Minor version number:    %d.%d\n", deviceProp.major, deviceProp.minor);
 
-		printf_stream_file(stdout, fs, "\n\n");
+		printf_stream(stdout, "\n\n");
 
 	}
 

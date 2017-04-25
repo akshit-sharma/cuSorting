@@ -13,8 +13,8 @@
 		printf_stream(stream_2,fixed_string,##__VA_ARGS__);	\
 		fflush(stream_2);
 
-#define printf_stream_file_excel(stream_1,stream_2,stream_3,fixed_string,...)	\
-		printf_stream_file(stream_1,stream_2,fixed_string,##__VA_ARGS__)	\
+#define printf_stream_excel(stream_1,stream_3,fixed_string,...)	\
+		printf_stream(stream_1,fixed_string,##__VA_ARGS__);	\
 		std::string fixedString = fixed_string;								\
 		std::replace( fixedString.begin(), fixedString.end(), '|', ',');	\
 		printf_stream(stream_3, fixedString.c_str(),##__VA_ARGS__);					\
@@ -30,14 +30,14 @@
 #define call_runsort_scheme(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 			runSort(cu_source_obj, small_number);															\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
+	printf_stream_excel(stdout, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
 															" | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",	\
 		technique, "scheme", "gpu", memory_alloc_time, small_col, pre_sort_duration,						\
 		sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);					\
 	}																										\
 	if(!skip_cpu){																							\
 				runSort(source_obj, small_number);															\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
+	printf_stream_excel(stdout, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
 													" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",		\
 		technique, "scheme", "cpu", memory_alloc_time, small_col, pre_sort_duration, sort_duration,			\
 					post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);						\
@@ -48,14 +48,14 @@
 #define call_runsort_results(technique, small_number, small_col, big_number, big_col, skip_cpu, skip_gpu)	\
 	if(hasCudaEnabledGPU && !(skip_gpu)){																	\
 		runSort(cu_big_source_obj, big_number);																\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
+	printf_stream_excel(stdout, database_file, " %10s | %7s | %4s | %10.5lf | %10s |"				\
 														" %10.5lf | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",	\
 					technique, "result", "gpu", memory_alloc_time, big_col, pre_sort_duration,				\
 					sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);		\
 	}																										\
 	if(!skip_cpu){																							\
 				runSort(big_source_obj, big_number);														\
-	printf_stream_file_excel(stdout, fs, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
+	printf_stream_excel(stdout, database_file, " %10s | %7s | %4s | %10.5lf | %10s | %10.5lf"		\
 															" | %10.5lf | %10.5lf | %10.5lf | %10u | %8s \n",		\
 		technique, "result", "cpu", memory_alloc_time, big_col, pre_sort_duration,							\
 		sort_duration, post_sort_duration, memory_dealloc_time, rowsCount, BoolToCheck);					\
