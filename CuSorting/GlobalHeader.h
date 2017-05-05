@@ -6,6 +6,10 @@
 #include<iostream>
 #include<fstream>
 
+#define FileCountMax 40
+#define StatusCountMax 2
+#define DIVIDENT 200		// 200 for 2.5 and 100 for 5
+
 
 #ifdef _MSC_VER
 

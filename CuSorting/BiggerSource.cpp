@@ -321,16 +321,21 @@ double BiggerSource::MemAllo(const char* file_name)
 	clock_t start;
 	start = startTimer();
 
-    size_t colmns = 18;
+	size_t orgRows;
+	size_t colmns = 18;
 
 
-	if (rows == 0)
-		rows = getFileLines(file_name);
-	else {
+	orgRows = getFileLines(file_name);
+	{
 		size_t temp;
-		temp = rows;
-		rows = getFileLines(file_name);
-		rows = (rows * temp) / 200;
+		if (rows == 0) {
+			rows = orgRows;
+		}else{
+			temp = rows;
+			rows = (orgRows * temp) / DIVIDENT;
+			if (rows > orgRows)
+				rows = orgRows;
+		}
 	}
 	
 	size_t temp_rows = rows;
@@ -828,6 +833,8 @@ void BiggerSource::bitonicMerge(int* a, int low, int cnt, int dir)
 
 void BiggerSource::bitonicSort(int* a, int low, int cnt, int dir)
 {
+	unsigned int i, j, k;
+	/*
 	if (cnt>1)
 	{
 		int k = cnt / 2;
@@ -838,6 +845,32 @@ void BiggerSource::bitonicSort(int* a, int low, int cnt, int dir)
 
 		bitonicMerge(a, low, cnt, dir);
 	}
+	*/
+		for (k = 2; k <= cnt; k <<= 1) {
+			for (j = k >> 1; j>0; j = j >> 1) {
+				for (i = 0; i < cnt; i++) {
+					unsigned int ixj;
+					ixj = i^j;
+
+					if ((ixj) > i) {
+						if ((i&k) == 0) {
+							if (a[i] > a[ixj]) {
+								int temp = a[i];
+								a[i] = a[ixj];
+								a[ixj] = temp;
+							}
+						}
+						if ((i&k) != 0) {
+							if (a[i] < a[ixj]) {
+								int temp = a[i];
+								a[i] = a[ixj];
+								a[ixj] = temp;
+							}
+						}
+					}
+				}
+			}
+		}
 }
 
 void BiggerSource::compAndSwap(long long* a, int i, int j, int dir)
@@ -860,6 +893,8 @@ void BiggerSource::bitonicMerge(long long *a, int low, int cnt, int dir)
 
 void BiggerSource::bitonicSort(long long* a, int low, int cnt, int dir)
 {
+	unsigned int i, j, k;
+	/*
 	if (cnt>1)
 	{
 		int k = cnt / 2;
@@ -869,6 +904,32 @@ void BiggerSource::bitonicSort(long long* a, int low, int cnt, int dir)
 		bitonicSort(a, low + k, k, 0);
 
 		bitonicMerge(a, low, cnt, dir);
+	}
+	*/
+	for (k = 2; k <= cnt; k <<= 1) {
+		for (j = k >> 1; j>0; j = j >> 1) {
+			for (i = 0; i < cnt; i++) {
+				unsigned int ixj;
+				ixj = i^j;
+
+				if ((ixj) > i) {
+					if ((i&k) == 0) {
+						if (a[i] > a[ixj]) {
+							int temp = a[i];
+							a[i] = a[ixj];
+							a[ixj] = temp;
+						}
+					}
+					if ((i&k) != 0) {
+						if (a[i] < a[ixj]) {
+							int temp = a[i];
+							a[i] = a[ixj];
+							a[ixj] = temp;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

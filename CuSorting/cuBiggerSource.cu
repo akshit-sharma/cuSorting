@@ -43,9 +43,10 @@ double CuBiggerSource::sort() {
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
-			for (k = 2; k <= NUM_VALS; k <<= 1) {
+			num_blocks = max2Rows / THREADS + 1;
+			for (k = 2; k <= max2Rows; k <<= 1) {
 				for (j = k >> 1; j>0; j = j >> 1) {
-					bitonic_sort_llong << <BLOCKS, THREADS >> >(d_llong, j, k);
+					bitonic_sort_llong << <num_blocks, THREADS >> >(d_llong, j, k);
 					gpuErrchk(cudaPeekAtLastError());
 				}
 			}
@@ -75,9 +76,10 @@ double CuBiggerSource::sort() {
 			gpuErrchk(cudaDeviceSynchronize());
 			break;
 		case 1:
-			for (k = 2; k <= NUM_VALS; k <<= 1) {
+			num_blocks = max2Rows / THREADS + 1;
+			for (k = 2; k <= max2Rows; k <<= 1) {
 				for (j = k >> 1; j>0; j = j >> 1) {
-					bitonic_sort_int << <BLOCKS, THREADS >> >(d_int, j, k);
+					bitonic_sort_int << <num_blocks, THREADS >> >(d_int, j, k);
 					gpuErrchk(cudaPeekAtLastError());
 				}
 			}
